@@ -1,0 +1,25 @@
+#!/bin/sh
+# Pre-push hook — runs automatically before every git push.
+# Blocks the push if lint or tests fail.
+# Installed via: the project's install script (should run automatically on
+# dependency install — see install-hooks.js and README.md in this folder).
+#
+# ADAPTAR: troca os dois comandos abaixo pelos equivalentes reais do
+# projecto (ex.: `pnpm lint`, `cargo clippy`, `pytest`, `go test ./...`).
+
+echo "-> Pre-push: a verificar qualidade do codigo..."
+
+npm run lint --silent
+if [ $? -ne 0 ]; then
+  echo "x Lint falhou. Corrige os erros antes de fazer push."
+  exit 1
+fi
+
+npm test --silent
+if [ $? -ne 0 ]; then
+  echo "x Testes falharam. Corrige os testes antes de fazer push."
+  exit 1
+fi
+
+echo "OK. A fazer push..."
+exit 0
