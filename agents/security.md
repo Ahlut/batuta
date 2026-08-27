@@ -2,6 +2,7 @@
 name: security
 description: Auditoria de seguranca nos tiers SECURITY, DATA-MIGRATION, SCHEMA e FEATURE. Revê regras de autorizacao, endpoints/funcoes privilegiadas, auth/guards, pagamentos e qualquer funcao que corra com privilegios elevados. Usar ANTES de implementar (pode mudar o desenho) e de novo sobre o diff final.
 model: opus
+tools: Read, Grep, Glob, Bash
 ---
 
 # Security Agent — {{PROJECT_NAME}}
@@ -26,13 +27,14 @@ tabela de tiers no CLAUDE.md):
 ## Contexto
 
 <!-- ADAPTAR: preencher com o modelo de auth/autorizacao real do projecto.
-Exemplo do projecto de origem:
-- Auth: Supabase Auth (JWT) — sessao em localStorage
-- Autorizacao: RLS no PostgreSQL — primeira linha de defesa
+Exemplo ficticio, para calibrar o nivel de detalhe:
+- Auth: NextAuth (JWT) — sessao em cookie httpOnly
+- Autorizacao: middleware por role + checks por linha na camada de dados —
+  primeira linha de defesa
 - Roles: 3 perfis distintos (ex.: admin, gestor de equipa, utilizador final)
-  — cada um com politicas RLS especificas
-- Edge Functions: usam service role (nunca exposta ao cliente)
-- Operacoes criticas: funcoes SQL atomicas com FOR UPDATE
+  — cada um com regras de acesso especificas
+- Rotas server-only: usam a chave de servico (nunca exposta ao cliente)
+- Operacoes criticas: transacoes atomicas com SELECT ... FOR UPDATE
 -->
 
 ## Checklist

@@ -29,13 +29,13 @@ Contexto completo: `docs/product-context.md` <!-- ADAPTAR: criar se nao existir;
 {{STACK}}
 
 <!--
-Exemplo (comentado como referencia de nivel de detalhe, nao como default):
-- React 18 + Vite + TypeScript
-- shadcn/ui + Tailwind CSS
-- React Query (@tanstack/react-query)
-- React Router DOM v6
-- Supabase (PostgreSQL + Auth + RLS + Edge Functions)
-- Vitest + React Testing Library (testes unitarios)
+Exemplo ficticio (comentado como referencia de nivel de detalhe, nao como default):
+- Next.js (App Router) + TypeScript
+- Radix UI + CSS Modules
+- SWR para data fetching
+- Prisma + PostgreSQL
+- NextAuth (JWT em cookie httpOnly)
+- Jest + Testing Library (testes unitarios)
 -->
 
 ---
@@ -116,13 +116,16 @@ antes de qualquer push, independentemente do resto.
    Esta linha e o gate — sem ela, nao escrever codigo. Aplica-se a CADA bloco
    de mudancas (nao uma vez por sessao). O utilizador pode fazer push-back
    imediato se o tier estiver errado.
+   Este passo e IMPOSTO pelo harness, nao so pedido: o hook PreToolUse
+   `check-tier-declared` (ver "Hooks automaticos") bloqueia Edit/Write em
+   ficheiros de codigo se nao houver declaracao TIER desde o ultimo commit.
 1. Perceber o pedido -> confirmar se ambiguo
 2. Ler codigo existente antes de escrever (nunca assumir)
-   2a. <!-- ADAPTAR: exemplo do projecto de origem — "antes de escrever SQL
-       com auth.*, grep no directorio de migracoes por padrao similar; nunca
-       inventar subselect directo numa tabela de sistema do auth provider".
-       Trocar pelo equivalente do stack real (ex.: nunca inventar uma chamada
-       directa a uma tabela gerida pelo provider de auth). -->
+   2a. <!-- ADAPTAR: regra "nunca inventar acesso a superficie gerida por
+       terceiros" — ex.: antes de escrever queries que tocam tabelas geridas
+       pelo provider de auth, grep no directorio de migracoes por padrao
+       similar; nunca inventar um acesso directo a uma tabela de sistema
+       desse provider. Trocar pelo equivalente do stack real. -->
 2.5 Se tier SECURITY/SCHEMA e ha um erro reportado: capturar o codigo/mensagem
     exactos ANTES de patchar (substituir toast/log generico por erro completo,
     reproduzir, copiar output) — evita patch para hipotese errada
@@ -244,18 +247,31 @@ facto — nao manter agentes sem area. -->
 
 ### Mecanismo de invocacao (OBRIGATORIO seguir)
 
-Os agentes sao invocados via `Agent` tool (subagente de proposito geral, ou
-o tipo especifico se o harness tiver um por nome).
-O prompt do agente deve incluir:
-1. O conteudo do ficheiro `.claude/agents/[agente].md` como instrucoes de papel
-2. O codigo/contexto relevante para a tarefa
-3. O output esperado conforme definido no ficheiro do agente
+O harness (Claude Code) carrega os ficheiros de `.claude/agents/*.md`
+automaticamente: cada um torna-se um tipo de subagente nomeado, com o papel
+definido pelo corpo do ficheiro e o `description` do frontmatter a guiar a
+delegacao. Invocar o agente **pelo nome** (`subagent_type: "security"`, etc.)
+— NAO copiar o conteudo do ficheiro para o prompt; isso era o mecanismo
+antigo e duplica instrucoes que o harness ja aplicou. No prompt da invocacao
+vai so o que o ficheiro nao tem: o codigo/contexto da tarefa concreta e o
+ambito do que se quer analisado ou produzido.
 
-**Modelo por agente** (ver coluna "Modelo" na tabela de tiers):
-- `model: "opus"` → Architect, Security (decisoes criticas, analise de seguranca)
-- `model: "sonnet"` → QA, Frontend, Backend (implementacao, testes, codigo mecanico)
-- Usar sempre o alias (`"opus"`, `"sonnet"`), nunca o ID fixo — o alias
+**Modelo por agente**: definido no frontmatter de cada ficheiro (`model:`),
+aplicado automaticamente pelo harness (ver coluna "Modelo" na tabela de tiers):
+- `model: opus` → Architect, Security, Product (decisoes criticas, analise de seguranca)
+- `model: sonnet` → QA, Frontend, Backend (implementacao, testes, codigo mecanico)
+- Usar sempre o alias (`opus`, `sonnet`), nunca o ID fixo — o alias
   acompanha automaticamente a versao mais recente da familia.
+
+**Ferramentas por agente**: os revisores nao escrevem. `security` e
+`architect` tem `tools: Read, Grep, Glob, Bash` no frontmatter; `product`
+tem `Read, Grep, Glob`. Um revisor adversarial que consegue alterar o codigo
+que esta a rever deixa de ser adversarial — devolve o achado/spec, e o
+orquestrador aplica. (Nota honesta: `Bash` fica, porque a revisao precisa de
+`git diff` e de correr verificacoes — o que tecnicamente ainda permite
+escrever via shell. A restricao e friccao deliberada e sinal de papel, nao
+uma sandbox.) QA, Frontend e Backend mantem escrita — implementar e o papel
+deles.
 
 **Thread principal:** modelo mais barato para sessoes exploratórias ou
 DISPLAY/LOGIC leve; modelo mais caro quando se implementa directamente nos
@@ -272,8 +288,10 @@ nao o output.
 ### Specs persistentes (tier SCHEMA/FEATURE)
 
 Em tiers **SCHEMA/FEATURE**, o output do Architect nao fica so na conversa:
-escreve-se em `docs/specs/YYYY-MM-DD-<feature>.md` (decisoes, schema,
-contratos, criterios de aceitacao) e comita-se **antes** da implementacao. A
+o agente devolve a spec completa (e read-only — ver "Ferramentas por
+agente") e o orquestrador escreve-a em `docs/specs/YYYY-MM-DD-<feature>.md`
+(decisoes, schema, contratos, criterios de aceitacao) e comita-a **antes**
+da implementacao. A
 spec e o contrato — a implementacao referencia-a e o QA valida em 2 niveis:
 conformidade com a spec primeiro, qualidade do codigo depois (nao so contra o
 codigo).
@@ -337,10 +355,14 @@ silenciosamente.
 | Hook | Evento | Accao |
 |------|--------|-------|
 | Pre-push | Antes de `git push` | Corre `{{LINT_CMD}}` + `{{TEST_CMD}}` — bloqueia se falhar |
+| check-tier-declared | PreToolUse em Edit\|Write (harness) | Bloqueia edicao de codigo sem declaracao "TIER:" desde o ultimo commit — o passo 0 deixa de ser so prosa |
 
 Config do pre-push: `scripts/pre-push` (instalado via install script — ver
-`hooks/README.md` no template). <!-- ADAPTAR: acrescentar aqui outros hooks
-do harness que o projecto vier a usar (ex.: SessionStart informativo) -->
+`hooks/README.md` no template). Config do gate de tier:
+`.claude/hooks/check-tier-declared.js` + entrada PreToolUse em
+`.claude/settings.json` (ver `hooks/README.md`). <!-- ADAPTAR: acrescentar
+aqui outros hooks do harness que o projecto vier a usar (ex.: SessionStart
+informativo) -->
 
 ---
 

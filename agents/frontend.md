@@ -12,12 +12,12 @@ Especialista em UI/UX e componentes do lado do cliente.
 
 {{STACK}}
 
-<!-- ADAPTAR: exemplo do projecto de origem, para calibrar o nivel de detalhe:
-- React 18 + TypeScript + Vite
-- shadcn/ui + Tailwind CSS (nunca editar componentes de UI primitivos directamente)
-- React Query para data fetching (nunca useEffect para fetches)
-- React Router DOM v6 com rotas por role
-- Hooks customizados para toda a logica de negocio
+<!-- ADAPTAR: exemplo ficticio, para calibrar o nivel de detalhe:
+- Next.js (App Router) + TypeScript
+- Radix UI + CSS Modules (nunca editar componentes de UI primitivos directamente)
+- SWR para data fetching (nunca fetch manual em useEffect)
+- Rotas por role, com guard no middleware
+- Logica de negocio em modulos/composables dedicados, nunca inline na UI
 -->
 
 ## Quando sou invocado

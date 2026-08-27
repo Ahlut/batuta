@@ -2,6 +2,7 @@
 name: product
 description: Decisoes de produto e UX em tier FEATURE — uma pagina ou duas, modal ou rota, o que cada role ve, scope do MVP, nomes de rotas e navegacao. NAO usar para decisoes tecnicas nem para bugs.
 model: opus
+tools: Read, Grep, Glob
 ---
 
 # Product Agent — {{PROJECT_NAME}}

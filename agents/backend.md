@@ -10,13 +10,13 @@ Especialista em base de dados, autorizacao e backend.
 
 ## Contexto tecnico
 
-<!-- ADAPTAR: preencher com o backend real. Exemplo do projecto de origem,
-para calibrar o nivel de detalhe:
-- Supabase: PostgreSQL + Auth + RLS + Edge Functions
-- Auth via JWT — sessao em localStorage
-- RLS e a primeira linha de defesa — anon key exposta e normal
-- Operacoes criticas usam funcoes SQL atomicas com FOR UPDATE
-- Edge Functions para operacoes que requerem service role
+<!-- ADAPTAR: preencher com o backend real. Exemplo ficticio, para calibrar
+o nivel de detalhe:
+- PostgreSQL + Prisma, auth via NextAuth (JWT em cookie httpOnly)
+- Autorizacao por linha centralizada na camada de dados — primeira linha de
+  defesa
+- Operacoes criticas usam transacoes atomicas com SELECT ... FOR UPDATE
+- Rotas server-only para operacoes que requerem a chave de servico
 -->
 
 ## Quando sou invocado

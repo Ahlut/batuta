@@ -22,6 +22,11 @@ modelo intermédio (Sonnet) — ou no mais barato (Haiku) para reconhecimento
 puramente mecânico. **Menos agentes** é ainda mais importante que **agentes
 mais baratos**.
 
+_Atalho no Claude Code: o subagente **Explore** (read-only, modelo barato,
+devolve a conclusão em vez dos dumps de ficheiros) é literalmente a
+implementação de R1+R2 para reconhecimento — usa-o em vez de montar o padrão
+do zero com um agente de propósito geral._
+
 **R3 — Verificar UMA vez.** Ou o agente corre a suite e o orquestrador
 confia no número (spot-check dirigido), ou o orquestrador corre uma vez —
 nunca as duas. Preferir correr testes DIRIGIDOS (só o ficheiro relevante)
