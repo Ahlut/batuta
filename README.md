@@ -19,7 +19,10 @@ Um conjunto de ficheiros para colar num projecto novo:
 - **`CLAUDE.template.md`** — o índice que a Claude lê no início de cada
   sessão: fluxo de desenvolvimento, tabela de tiers, tie-breaks, mecanismo de
   agentes.
-- **`agents/`** — 6 definições de agente (papel, contexto, output esperado).
+- **`agents/`** — 6 definições de agente (papel, quando invocar, output
+  esperado). Genéricos por desenho: o contexto específico do projecto vive
+  no `CLAUDE.md`, que cada agente lê primeiro — assim a via plugin e a via
+  copy-paste dão o mesmo resultado.
 - **`skills/`** — esqueletos de skills que orquestram os agentes.
 - **`hooks/`** — hook de pre-push (lint + test) e instalador.
 - **`docs/custo-tokens.md`** — regras de contenção de custo de fan-out de
@@ -72,7 +75,7 @@ Code. No projecto onde queres a framework:
 
 Isto instala os **agentes**, as **skills** e o **hook PreToolUse do gate de
 tier** (sim, o gate fica activo ao instalar — é o objectivo do plugin; lê
-`hooks/check-tier-declared.js` antes, como com qualquer hook). Ficam de fora,
+`hooks/check-tier-declared.cjs` antes, como com qualquer hook). Ficam de fora,
 por natureza: o `CLAUDE.md` do projecto (conteúdo por-projecto — preencher a
 partir do `CLAUDE.template.md`, ver checklist abaixo) e o hook de **pre-push
 do git** (vive em `scripts/` + `package.json`, ver `hooks/README.md`).

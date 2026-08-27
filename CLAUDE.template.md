@@ -241,6 +241,13 @@ problemas que mudam o design, nao so o codigo.
 **Horizontais** = transversais, aplicam-se a qualquer area.
 **Verticais** = especialistas numa camada tecnica.
 
+Os ficheiros de agente sao **genericos por desenho**: o contexto especifico
+do projecto (stack, modelo de auth, principios de UX, arvore de pastas) vive
+NESTE ficheiro e nos docs que ele indica — cada agente comeca por le-los. E
+por isso que a via plugin (ficheiros read-only partilhados) e a via
+copy-paste dao o mesmo resultado; enriquecer um agente = enriquecer o
+CLAUDE.md, nao editar o ficheiro do agente.
+
 <!-- ADAPTAR: se o projecto nao tiver frontend/backend como camadas
 separadas (ex.: uma CLI, uma lib), reduzir os verticais ao que existir de
 facto — nao manter agentes sem area. -->
@@ -366,7 +373,7 @@ silenciosamente.
 
 Config do pre-push: `scripts/pre-push` (instalado via install script — ver
 `hooks/README.md` no template). Config do gate de tier:
-`.claude/hooks/check-tier-declared.js` + entrada PreToolUse em
+`.claude/hooks/check-tier-declared.cjs` + entrada PreToolUse em
 `.claude/settings.json` (ver `hooks/README.md`). <!-- ADAPTAR: acrescentar
 aqui outros hooks do harness que o projecto vier a usar (ex.: SessionStart
 informativo) -->

@@ -42,7 +42,7 @@ outro gestor, ou um `Makefile`/script de setup corrido uma vez).
 
 O passo 0 do fluxo ("declarar TIER antes de escrever código") era prosa — e
 prosa ignora-se, como a própria "Regra anti-skip" do CLAUDE.md documenta. O
-`check-tier-declared.js` torna-o mecânico: é um hook **PreToolUse** do Claude
+`check-tier-declared.cjs` torna-o mecânico: é um hook **PreToolUse** do Claude
 Code que intercepta Edit/Write e bloqueia a edição de ficheiros de código se
 não houver uma declaração `TIER: ...` no transcript da sessão **desde o
 último commit** (o commit fecha o bloco de trabalho anterior).
@@ -56,9 +56,14 @@ não houver uma declaração `TIER: ...` no transcript da sessão **desde o
   fica **visível ao utilizador** em todos os blocos, para o push-back humano
   acontecer. É fricção deliberada, não uma sandbox.
 
+A extensão `.cjs` não é gosto: com `.js`, qualquer projecto `"type": "module"`
+tratava o script como ESM, o `require` crashava, e — como exit ≠ 2 num
+PreToolUse não bloqueia — o gate morria ABERTO com stack trace no stderr.
+Manter `.cjs` ao copiar.
+
 Instalação manual (sem plugin):
 
-1. Copiar `check-tier-declared.js` para `.claude/hooks/` no projecto.
+1. Copiar `check-tier-declared.cjs` para `.claude/hooks/` no projecto.
 2. Acrescentar ao `.claude/settings.json` do projecto (merge, não substituir):
    ```json
    {
@@ -67,7 +72,7 @@ Instalação manual (sem plugin):
          {
            "matcher": "Edit|Write",
            "hooks": [
-             { "type": "command", "command": "node .claude/hooks/check-tier-declared.js" }
+             { "type": "command", "command": "node .claude/hooks/check-tier-declared.cjs" }
            ]
          }
        ]
