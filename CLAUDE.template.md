@@ -256,6 +256,13 @@ antigo e duplica instrucoes que o harness ja aplicou. No prompt da invocacao
 vai so o que o ficheiro nao tem: o codigo/contexto da tarefa concreta e o
 ambito do que se quer analisado ou produzido.
 
+Confirmar que o tipo aparece na lista de agentes da sessao antes de assumir
+que carregou: um frontmatter com YAML invalido — o caso classico e `: `
+(dois pontos + espaco) dentro de um `description` sem aspas — faz o agente
+ser ignorado EM SILENCIO. Descriptions com `:` vao sempre entre aspas; a
+licao custou meses de agentes "instalados" que nunca carregaram no projecto
+de origem.
+
 **Modelo por agente**: definido no frontmatter de cada ficheiro (`model:`),
 aplicado automaticamente pelo harness (ver coluna "Modelo" na tabela de tiers):
 - `model: opus` → Architect, Security, Product (decisoes criticas, analise de seguranca)

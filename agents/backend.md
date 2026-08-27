@@ -1,6 +1,6 @@
 ---
 name: backend
-description: Especialista de backend/base de dados: tabelas, indices, regras de autorizacao, funcoes atomicas e endpoints/funcoes privilegiadas. Usar para trabalho de base de dados e backend, sozinho ou depois do architect.
+description: "Especialista de backend/base de dados: tabelas, indices, regras de autorizacao, funcoes atomicas e endpoints/funcoes privilegiadas. Usar para trabalho de base de dados e backend, sozinho ou depois do architect."
 model: sonnet
 ---
 

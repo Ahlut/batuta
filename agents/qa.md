@@ -1,6 +1,6 @@
 ---
 name: qa
-description: Escreve testes nos tiers LOGIC, SECURITY, DATA-MIGRATION, SCHEMA e FEATURE. Valida em dois niveis: conformidade com a spec primeiro, qualidade do codigo depois. Usar DEPOIS de implementar. Para bugfixes, escreve primeiro o teste que falha.
+description: "Escreve testes nos tiers LOGIC, SECURITY, DATA-MIGRATION, SCHEMA e FEATURE. Valida em dois niveis: conformidade com a spec primeiro, qualidade do codigo depois. Usar DEPOIS de implementar. Para bugfixes, escreve primeiro o teste que falha."
 model: sonnet
 ---
 

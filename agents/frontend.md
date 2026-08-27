@@ -1,6 +1,6 @@
 ---
 name: frontend
-description: Especialista de UI/frontend: componentes, paginas, hooks, formularios, responsividade e acessibilidade. Verifica sempre as areas duplicadas do projecto (se existirem) antes de dar uma mudanca por concluida.
+description: "Especialista de UI/frontend: componentes, paginas, hooks, formularios, responsividade e acessibilidade. Verifica sempre as areas duplicadas do projecto (se existirem) antes de dar uma mudanca por concluida."
 model: sonnet
 ---
 
