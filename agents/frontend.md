@@ -57,17 +57,31 @@ Ao implementar, produz:
 
 ### Criterio de "pronto" (verificar ANTES de entregar)
 
-A entrega so esta feita quando isto tudo e verdade — nao e uma aspiracao,
-e a checklist de pre-entrega:
+A entrega so esta feita quando isto tudo e verdade. A checklist esta
+separada por quem consegue verificar o que — um agente que le codigo nao ve
+contraste efectivo nem clipping, e marca-los verdes por assuncao seria
+exactamente a confianca falsa que este repo combate.
 
-- [ ] Contraste de texto minimo 4.5:1
+**Verificavel no codigo (o agente confirma):**
+
 - [ ] Estados de foco visiveis para navegacao por teclado
 - [ ] `prefers-reduced-motion` respeitado em qualquer animacao
 - [ ] Loading e error states presentes em todos os fetches
-- [ ] Texto e labels fazem reflow sem clipping nos breakpoints do projecto
-      (os breakpoints reais vivem no `CLAUDE.md`, nao aqui)
 - [ ] Icones com significado tem nome acessivel; icones decorativos ficam
       ocultos para leitores de ecra
 
-O que falhar e nao for corrigido, declara-se no output com o porque — nao
-se entrega em silencio.
+**Exige a app a correr (passo 6.5 do fluxo):**
+
+- [ ] Contraste de texto minimo 4.5:1 (se a fonte de verdade visual —
+      ADOPTION §5 — declarar os valores dos tokens, o agente calcula o
+      racio dos pares declarados; o que nao consegue garantir e que o par
+      usado em runtime e o que calculou)
+- [ ] Texto e labels fazem reflow sem clipping nos breakpoints do projecto
+      (os breakpoints reais vivem no `CLAUDE.md`, nao aqui)
+
+Nestes itens o agente NAO declara verde nem vermelho: declara o que fica
+por confirmar e porque, e devolve-o ao orquestrador como pendente do passo
+6.5. Se o tier nao chegar a LOGIC e o 6.5 nao correr, ficam POR VERIFICAR —
+e isso diz-se no output em vez de se assumir que estao bem. O que falhar no
+primeiro grupo e nao for corrigido, declara-se com o porque — nao se
+entrega em silencio.
