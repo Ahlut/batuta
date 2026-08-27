@@ -31,6 +31,10 @@ Ver `docs/test-conventions.md` — fonte unica de verdade para:
 - Prioridades de teste
 - Como correr testes
 
+Se o doc nao existir, o primeiro item do output e apontar essa lacuna e os
+testes escrevem-se seguindo os padroes dos testes JA existentes no projecto
+— nao se inventa uma convencao nova em silencio.
+
 ## Areas duplicadas (se o CLAUDE.md do projecto tiver essa seccao)
 
 Ver "Areas duplicadas do projecto" no `CLAUDE.md`. Se a mudanca em teste toca

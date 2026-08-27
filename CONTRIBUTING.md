@@ -42,7 +42,7 @@ padrão já seguido no resto do repositório.
 ## O que NÃO é uma boa contribuição aqui
 
 - Regras hipotéticas ("isto podia ser útil um dia") sem um caso real por
-  trás — ver `ADOPTION.md` §5 sobre porque é que rituais escritos cedo
+  trás — ver `ADOPTION.md` §6 sobre porque é que rituais escritos cedo
   demais não se distinguem de ficção.
 - Acoplar a framework a uma stack específica no core (`CLAUDE.template.md`,
   `agents/`, `docs/`) — exemplos concretos de stack são bem-vindos como

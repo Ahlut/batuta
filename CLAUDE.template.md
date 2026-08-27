@@ -66,7 +66,7 @@ Resumo: <!-- ADAPTAR: 1-3 linhas com os invariantes de seguranca do projecto
 (ex.: "RLS em tudo", "validacao frontend + backend", "sem segredos em vars
 publicas", "operacoes financeiras atomicas") -->
 
-Supply-chain (opcional — ver `ADOPTION.md` §6): se o projecto tiver um gate
+Supply-chain (opcional — ver `ADOPTION.md` §7): se o projecto tiver um gate
 de cooldown de dependencias, descrever aqui a regra e apontar para o script.
 
 ---

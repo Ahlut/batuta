@@ -118,7 +118,30 @@ Decidir por projecto:
   é essa frase que evita a redescoberta do mesmo item por sessões
   diferentes.
 
-## 5. O manual de orquestração (opcional, tardio)
+## 5. Onde vive a fonte de verdade visual
+
+O mesmo problema que a §4 resolve para os pendentes, aplicado ao design:
+sem um sítio declarado, tokens, paleta, tipografia e regras de componente
+dispersam-se por três ou quatro lados e divergem em silêncio. E sem esse
+ponteiro, o Frontend agent está na mesma posição em que o Security estaria
+sem o modelo de autorização declarado — a rever às cegas.
+
+Decidir por projecto (as perguntas, não as respostas):
+
+- **Onde vive a fonte de verdade visual?** Um doc no repo (ex.:
+  `docs/design-system.md`), um export de tokens de uma ferramenta de design,
+  uma skill de design instalada — ou nada de formal.
+- **Quem a pode alterar, e o que acontece quando o código e ela divergem?**
+  (qual dos dois é que se corrige?)
+- **Apontar para ela na tabela "Documentação de referência" do `CLAUDE.md`**
+  adaptado — é de lá que o Frontend agent a vai ler.
+- **Se o projecto não tiver nenhuma, dizê-lo explicitamente** no `CLAUDE.md`
+  em vez de deixar o agente a assumir uma que não existe.
+
+Deliberadamente agnóstico: nenhuma ferramenta nomeada. Cada projecto aponta
+para o que tiver.
+
+## 6. O manual de orquestração (opcional, tardio)
 
 O projecto de origem desta framework tem um segundo documento, à parte do
 `CLAUDE.md`, com os rituais específicos do papel de orquestrador naquele
@@ -135,12 +158,12 @@ maduros costumam fazer. Escrevê-lo cedo demais produz um documento que
 descreve rituais hipotéticos, não reais — e isso não se distingue de ficção
 até alguém tentar segui-lo.
 
-## 6. Gate de cooldown de dependências (supply-chain)
+## 7. Gate de cooldown de dependências (supply-chain)
 
 Ver `hooks/README.md` — decisão explicada ali. Resumo: opcional, específico
 de ecossistema, só compensa quando o projecto já tem CI a sério.
 
-## 7. Checklist final antes de considerar a adopção terminada
+## 8. Checklist final antes de considerar a adopção terminada
 
 - [ ] `CLAUDE.md` do projecto sem nenhum `{{PLACEHOLDER}}` por preencher
 - [ ] Todas as secções `<!-- ADAPTAR -->` foram lidas e resolvidas (adaptadas
@@ -151,6 +174,8 @@ de ecossistema, só compensa quando o projecto já tem CI a sério.
       install` imprime a confirmação)
 - [ ] A lista-única de pendentes existe e está referenciada no `CLAUDE.md`
       (secção 4)
+- [ ] A fonte de verdade visual está declarada no `CLAUDE.md` — ou a sua
+      ausência está explícita (secção 5)
 - [ ] `docs/security-checklist.md` e `docs/test-conventions.md` foram
       criados (mesmo que curtos) — o `CLAUDE.md` aponta para eles mas não
       os substitui

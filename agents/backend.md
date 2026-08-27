@@ -13,7 +13,10 @@ Especialista em base de dados, autorizacao e backend.
 Generico por desenho — o backend real (base de dados, modelo de auth, onde
 vivem as operacoes privilegiadas) esta descrito no `CLAUDE.md` do projecto
 (seccoes Stack e Seguranca) e em `docs/security-checklist.md`. Ler antes de
-tocar em schema ou autorizacao.
+tocar em schema ou autorizacao. Se o modelo de autorizacao nao estiver
+declarado em nenhum dos dois, o primeiro item do output e apontar essa
+lacuna — nao se escreve schema nem regras de acesso sobre um modelo
+assumido.
 
 ## Quando sou invocado
 
