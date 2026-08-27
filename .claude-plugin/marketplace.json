@@ -1,0 +1,18 @@
+{
+  "name": "batuta",
+  "owner": {
+    "name": "Ahlut",
+    "url": "https://github.com/Ahlut"
+  },
+  "metadata": {
+    "description": "Marketplace da Batuta — framework de desenvolvimento AI-first",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "batuta",
+      "source": "./",
+      "description": "Framework de desenvolvimento AI-first: tiers de mudança, agentes de revisão read-only, gate de declaração de tier e contenção de custo de tokens. Instala os agentes, as skills e o hook PreToolUse; o CLAUDE.md do projecto e o pre-push de git ficam a cargo da adopção manual (ver ADOPTION.md)."
+    }
+  ]
+}

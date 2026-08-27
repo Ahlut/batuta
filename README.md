@@ -25,6 +25,8 @@ Um conjunto de ficheiros para colar num projecto novo:
 - **`docs/custo-tokens.md`** — regras de contenção de custo de fan-out de
   agentes (agnósticas, copiadas tal como estão).
 - **`ADOPTION.md`** — checklist do que decidir por projecto.
+- **`.claude-plugin/`** — manifesto de plugin: este repo é instalável
+  directamente no Claude Code (ver "Como adoptar").
 
 ## Filosofia
 
@@ -58,7 +60,24 @@ de cada sub-parte, não ao tier nominal da feature inteira.
 
 ---
 
-## Como adoptar — 3 cenários, prompts prontos a copiar
+## Como adoptar — plugin ou copy-paste
+
+**Via plugin (menos fricção)** — o repo é um marketplace de plugin do Claude
+Code. No projecto onde queres a framework:
+
+```
+/plugin marketplace add Ahlut/batuta
+/plugin install batuta@batuta
+```
+
+Isto instala os **agentes**, as **skills** e o **hook PreToolUse do gate de
+tier** (sim, o gate fica activo ao instalar — é o objectivo do plugin; lê
+`hooks/check-tier-declared.js` antes, como com qualquer hook). Ficam de fora,
+por natureza: o `CLAUDE.md` do projecto (conteúdo por-projecto — preencher a
+partir do `CLAUDE.template.md`, ver checklist abaixo) e o hook de **pre-push
+do git** (vive em `scripts/` + `package.json`, ver `hooks/README.md`).
+
+**Por copy-paste — 3 cenários, prompts prontos a copiar:**
 
 **A. Projecto novo, nascido do zero** — no GitHub, botão **"Use this
 template"** sobre este repo cria o repo do projecto já com a Batuta dentro.

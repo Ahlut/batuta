@@ -1,0 +1,13 @@
+{
+  "name": "batuta",
+  "version": "0.1.0",
+  "description": "Framework de desenvolvimento AI-first — o processo escala com o risco, não com o hábito. Tiers de mudança, agentes de revisão read-only, gate de declaração de tier e regras de contenção de custo de tokens.",
+  "author": {
+    "name": "Ahlut",
+    "url": "https://github.com/Ahlut"
+  },
+  "homepage": "https://github.com/Ahlut/batuta",
+  "repository": "https://github.com/Ahlut/batuta",
+  "license": "MIT",
+  "keywords": ["workflow", "agents", "process", "tiers", "code-review", "security"]
+}
