@@ -50,6 +50,24 @@ dados próprios. Perguntas por projecto:
   antes de mergear pagam-se cedo — são os candidatos a manter mesmo quando
   se reduz o resto.
 
+**Onde vive o contexto dos agentes.** Os ficheiros de `agents/` são
+genéricos por desenho e cada agente começa por ler o `CLAUDE.md` do projecto
+— é lá que se investe a especificidade, não nos ficheiros de agente (que na
+via plugin são read-only e partilhados). O nível de detalhe que vale a pena
+ter no `CLAUDE.md` para alimentar, por exemplo, o Security agent (exemplo
+fictício):
+
+- Auth: NextAuth (JWT) — sessão em cookie httpOnly
+- Autorização: middleware por role + checks por linha na camada de dados —
+  primeira linha de defesa
+- Roles: admin, gestor de equipa, utilizador final — regras de acesso
+  específicas por role
+- Rotas server-only: usam a chave de serviço (nunca exposta ao cliente)
+- Operações críticas: transacções atómicas com SELECT ... FOR UPDATE
+
+Menos específico do que isto e o agente revê às cegas; a instrução dele
+nesse caso é apontar a lacuna, não fingir que revê.
+
 ## 3. Que gates de CI
 
 O `ci.yml` de um projecto real com deploy automático (não incluído neste

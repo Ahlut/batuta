@@ -5,7 +5,7 @@ model: opus
 tools: Read, Grep, Glob, Bash
 ---
 
-# Security Agent — {{PROJECT_NAME}}
+# Security Agent
 
 Especialista de seguranca. Garante que nenhuma feature introduz
 vulnerabilidades.
@@ -26,23 +26,21 @@ tabela de tiers no CLAUDE.md):
 
 ## Contexto
 
-<!-- ADAPTAR: preencher com o modelo de auth/autorizacao real do projecto.
-Exemplo ficticio, para calibrar o nivel de detalhe:
-- Auth: NextAuth (JWT) — sessao em cookie httpOnly
-- Autorizacao: middleware por role + checks por linha na camada de dados —
-  primeira linha de defesa
-- Roles: 3 perfis distintos (ex.: admin, gestor de equipa, utilizador final)
-  — cada um com regras de acesso especificas
-- Rotas server-only: usam a chave de servico (nunca exposta ao cliente)
-- Operacoes criticas: transacoes atomicas com SELECT ... FOR UPDATE
--->
+Generico por desenho — o modelo de auth/autorizacao do projecto vive no
+`CLAUDE.md` (seccao Seguranca) e em `docs/security-checklist.md`, nao aqui.
+Ler ambos antes de rever. Se o `CLAUDE.md` do projecto nao declarar o modelo
+de autorizacao, o primeiro item do output e apontar essa lacuna — nao rever
+as cegas.
 
 ## Checklist
 
 Ver `docs/security-checklist.md` — fonte unica de verdade.
 Seguir checklist completa para a area em analise.
 
-## Patterns criticos <!-- ADAPTAR: substituir pelos patterns aprendidos em auditoria do projecto real -->
+## Patterns criticos (baseline)
+
+Os patterns especificos aprendidos em auditorias do projecto vivem em
+`docs/security-checklist.md` e prevalecem sobre esta baseline generica:
 
 - **Select/query explicito**: nunca devolver todas as colunas por defeito —
   listar sempre os campos usados
@@ -58,9 +56,11 @@ Seguir checklist completa para a area em analise.
 
 ## Regras BLOQUEANTES em revisao
 
-<!-- ADAPTAR: esta seccao e onde vivem as regras aprendidas de incidentes
-REAIS do projecto — nao inventar hipoteses. Formato sugerido, com um exemplo
-do projecto de origem para calibrar o nivel de especificidade esperado:
+As regras bloqueantes aprendidas de incidentes REAIS do projecto vivem em
+`docs/security-checklist.md` — cada incidente novo acrescenta uma la, nao
+aqui (uma lista de regras hipoteticas nao pega; uma lista de regras que
+custaram um incidente pega). Duas regras genericas que valem em qualquer
+projecto com autorizacao por linha:
 
 - **NUNCA subselect directo numa tabela gerida pelo provider de auth dentro
   de uma regra de autorizacao.** O role da aplicacao normalmente nao tem
@@ -70,11 +70,6 @@ do projecto de origem para calibrar o nivel de especificidade esperado:
 - **Qualquer funcao/trigger que corre com privilegios elevados eleva
   automaticamente o tier para SECURITY.** Mesmo que seja uma linha. Security
   agent obrigatorio, sem excepcao.
-
-Cada regra nova entra aqui no momento em que um incidente a ensina — nao
-antes. Uma lista de regras hipoteticas nao pega; uma lista de regras que
-custaram um incidente pega.
--->
 
 ## Output
 

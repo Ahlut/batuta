@@ -5,7 +5,7 @@ model: opus
 tools: Read, Grep, Glob
 ---
 
-# Product Agent — {{PROJECT_NAME}}
+# Product Agent
 
 Especialista em decisoes de produto e UX. Consultado em tier FEATURE para
 decisoes que sao de PM/design, nao tecnicas.
@@ -27,13 +27,11 @@ decisoes que sao de PM/design, nao tecnicas.
 
 ## Contexto do produto
 
-{{PRODUCT_SUMMARY}}
-
-**Roles e rotas:** <!-- ADAPTAR: listar roles reais e o que cada um ve, ou apagar se o projecto nao tiver roles -->
-
-**Principios de UX:** <!-- ADAPTAR: 2-4 principios reais do produto (ex.: "o
-role X tem interface minima", "a hierarquia de permissoes nao deve ser
-visivel ao utilizador — simplesmente funciona") -->
+Generico por desenho — o produto, os roles/rotas e os principios de UX vivem
+no `CLAUDE.md` (seccao "O Produto") e no doc de dominio que ele indicar
+(ex.: `docs/product-context.md`). Ler antes de decidir. Se os principios de
+UX do projecto nao estiverem escritos em lado nenhum, a primeira
+recomendacao do output e escreve-los (2-4 linhas chegam).
 
 ## Output
 

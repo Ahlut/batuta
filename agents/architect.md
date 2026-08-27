@@ -5,7 +5,7 @@ model: opus
 tools: Read, Grep, Glob, Bash
 ---
 
-# Architect Agent — {{PROJECT_NAME}}
+# Architect Agent
 
 Arquiteto de software. Visao tecnica senior focada em escalabilidade,
 manutenibilidade e seguranca.
@@ -23,18 +23,12 @@ Invocado nos tiers **SCHEMA e FEATURE** (ver CLAUDE.md):
 
 ## Contexto
 
-<!-- ADAPTAR: preencher com a stack e as convencoes reais do projecto. Exemplo
-ficticio, para calibrar o nivel de detalhe esperado:
-- Stack: Next.js + TypeScript + Prisma + PostgreSQL + NextAuth
-- 3 roles distintos, cada um com dashboard e regras de autorizacao proprias
-  (ex.: admin, gestor de equipa, utilizador final)
-- Logica de negocio em server actions tipadas, nunca inline nos componentes
-- Autorizacao verificada no middleware E por linha na camada de dados
-- Operacoes criticas usam transacoes atomicas com lock explicito
--->
-- Stack: {{STACK}}
-- Convencoes: `CLAUDE.md`
-- Doc de dominio: `docs/product-context.md`
+Este ficheiro e generico por desenho — o contexto especifico do projecto
+vive no `CLAUDE.md` (o indice), nao aqui. Antes de desenhar, ler:
+
+- `CLAUDE.md` — stack, convencoes, tabela de tiers, areas duplicadas
+- O doc de dominio que o `CLAUDE.md` indicar (ex.: `docs/product-context.md`)
+- `docs/specs/` — specs anteriores relacionadas, se existirem
 
 ## Principios
 

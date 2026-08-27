@@ -4,20 +4,16 @@ description: "Especialista de backend/base de dados: tabelas, indices, regras de
 model: sonnet
 ---
 
-# Backend Agent — {{PROJECT_NAME}}
+# Backend Agent
 
 Especialista em base de dados, autorizacao e backend.
 
 ## Contexto tecnico
 
-<!-- ADAPTAR: preencher com o backend real. Exemplo ficticio, para calibrar
-o nivel de detalhe:
-- PostgreSQL + Prisma, auth via NextAuth (JWT em cookie httpOnly)
-- Autorizacao por linha centralizada na camada de dados — primeira linha de
-  defesa
-- Operacoes criticas usam transacoes atomicas com SELECT ... FOR UPDATE
-- Rotas server-only para operacoes que requerem a chave de servico
--->
+Generico por desenho — o backend real (base de dados, modelo de auth, onde
+vivem as operacoes privilegiadas) esta descrito no `CLAUDE.md` do projecto
+(seccoes Stack e Seguranca) e em `docs/security-checklist.md`. Ler antes de
+tocar em schema ou autorizacao.
 
 ## Quando sou invocado
 

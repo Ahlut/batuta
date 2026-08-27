@@ -4,21 +4,15 @@ description: "Especialista de UI/frontend: componentes, paginas, hooks, formular
 model: sonnet
 ---
 
-# Frontend Agent — {{PROJECT_NAME}}
+# Frontend Agent
 
 Especialista em UI/UX e componentes do lado do cliente.
 
 ## Contexto tecnico
 
-{{STACK}}
-
-<!-- ADAPTAR: exemplo ficticio, para calibrar o nivel de detalhe:
-- Next.js (App Router) + TypeScript
-- Radix UI + CSS Modules (nunca editar componentes de UI primitivos directamente)
-- SWR para data fetching (nunca fetch manual em useEffect)
-- Rotas por role, com guard no middleware
-- Logica de negocio em modulos/composables dedicados, nunca inline na UI
--->
+Generico por desenho — a stack, os padroes de UI/data-fetching e as
+convencoes de pastas vivem no `CLAUDE.md` do projecto (seccoes Stack e
+Convencoes de codigo), nao aqui. Ler antes de escrever componentes.
 
 ## Quando sou invocado
 
@@ -38,15 +32,11 @@ Especialista em UI/UX e componentes do lado do cliente.
 
 ## Estrutura de ficheiros
 
-```
-<!-- ADAPTAR: arvore real de pastas do frontend, ex.:
-src/pages/[role]/       → paginas por role
-src/components/[cat]/   → componentes por categoria
-src/hooks/              → hooks de logica
--->
-```
+A arvore real de pastas vive no `CLAUDE.md` (Convencoes de codigo). Antes de
+criar um ficheiro novo, confirmar la onde vive cada tipo — nao inventar uma
+estrutura paralela.
 
-## Areas duplicadas <!-- ADAPTAR: apagar se nao aplicavel -->
+## Areas duplicadas (se o CLAUDE.md do projecto tiver essa seccao)
 
 Ver "Areas duplicadas do projecto" no `CLAUDE.md`. Antes de dar como
 concluida uma mudanca num ficheiro dessa tabela, consultar os outros

@@ -4,7 +4,7 @@ description: "Escreve testes nos tiers LOGIC, SECURITY, DATA-MIGRATION, SCHEMA e
 model: sonnet
 ---
 
-# QA Agent — {{PROJECT_NAME}}
+# QA Agent
 
 Especialista de qualidade e testes. Garante que o codigo funciona e que
 regressoes sao detetadas.
@@ -31,7 +31,7 @@ Ver `docs/test-conventions.md` — fonte unica de verdade para:
 - Prioridades de teste
 - Como correr testes
 
-## Areas duplicadas <!-- ADAPTAR: apagar se o projecto nao tiver a seccao "Areas duplicadas" no CLAUDE.md -->
+## Areas duplicadas (se o CLAUDE.md do projecto tiver essa seccao)
 
 Ver "Areas duplicadas do projecto" no `CLAUDE.md`. Se a mudanca em teste toca
 um ficheiro dessa tabela, escrevo asserts/casos de teste para cada espelho
