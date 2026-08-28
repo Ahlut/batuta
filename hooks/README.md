@@ -43,18 +43,33 @@ outro gestor, ou um `Makefile`/script de setup corrido uma vez).
 O passo 0 do fluxo ("declarar TIER antes de escrever código") era prosa — e
 prosa ignora-se, como a própria "Regra anti-skip" do CLAUDE.md documenta. O
 `check-tier-declared.cjs` torna-o mecânico: é um hook **PreToolUse** do Claude
-Code que intercepta Edit/Write e bloqueia a edição de ficheiros de código se
-não houver uma declaração `TIER: ...` no transcript da sessão **desde o
-último commit** (o commit fecha o bloco de trabalho anterior).
+Code que intercepta Edit/Write e bloqueia a edição de ficheiros de código sem
+um **marcador de bloco** válido — o ficheiro `.claude/tier-block`
+(gitignored), escrito no terminal ao declarar o tier:
+
+```
+echo "TIER: X. Agentes: Y. Local test: sim/nao." > .claude/tier-block
+```
+
+O gate exige que o marcador contenha uma declaração `TIER: <tier>` válida e
+tenha mtime **posterior ao último commit** (o commit fecha o bloco; bloco
+novo = redeclarar ao utilizador + reescrever o marcador).
+
+Porquê um marcador e não o transcript: a v1 parseava o transcript da sessão
+e **bloqueava falsamente em produção** — a declaração em prosa ficava atrás
+de um commit intermédio, fora da janela de leitura (256KB ≈ 2-3 minutos numa
+sessão payload-heavy), ou ainda por flush quando o hook corria. O formato do
+transcript não é contrato; o mtime de um ficheiro é.
 
 Âmbito e limites (declarados no topo do próprio script):
-- Ficheiros `.md`/`.txt`/`.json`, `docs/` e `.claude/` estão isentos — o
-  passo 0 aplica-se a código.
-- Fail-open em erros de infraestrutura, fail-closed só no caso que ele
-  existe para apanhar (transcript legível, sem declaração).
-- O que o gate garante não é que o modelo pensa no tier — é que a declaração
-  fica **visível ao utilizador** em todos os blocos, para o push-back humano
-  acontecer. É fricção deliberada, não uma sandbox.
+- Ficheiros `.md`/`.txt`, `docs/` e `.claude/` estão isentos — o passo 0
+  aplica-se a código. `.json` NÃO é isento (package.json é tier DEPS).
+- O modelo pode escrever o marcador por reflexo — mas o echo aparece no
+  terminal, **visível ao utilizador**, que faz o push-back. É fricção
+  deliberada e sinal de papel, não uma sandbox.
+- Bash fica fora do matcher; blocos com vários commits reescrevem o
+  marcador após cada commit; o timestamp do git tem resolução de 1s
+  (aresta documentada); fail-open em erros de infraestrutura.
 
 A extensão `.cjs` não é gosto: com `.js`, qualquer projecto `"type": "module"`
 tratava o script como ESM, o `require` crashava, e — como exit ≠ 2 num
@@ -63,6 +78,8 @@ Manter `.cjs` ao copiar.
 
 Instalação manual (sem plugin):
 
+0. Acrescentar `.claude/tier-block` ao `.gitignore` do projecto (o marcador
+   é efémero, por sessão/worktree — nunca se comita).
 1. Copiar `check-tier-declared.cjs` para `.claude/hooks/` no projecto.
 2. Acrescentar ao `.claude/settings.json` do projecto (merge, não substituir):
    ```json

@@ -2,62 +2,59 @@
 // Hook PreToolUse (Claude Code) — o gate do passo 0 do fluxo, imposto pelo
 // harness em vez de só pedido em prosa.
 //
-// Bloqueia Edit/Write em ficheiros de código se não existir uma declaração
-// "TIER: ..." no transcript da sessão desde o último commit (o commit fecha
-// o bloco de trabalho anterior; um bloco novo exige declaração nova).
+// Bloqueia Edit/Write em ficheiros de código se não existir um MARCADOR DE
+// BLOCO válido: o ficheiro `.claude/tier-block` (gitignored), escrito pelo
+// orquestrador ao declarar o tier, com mtime posterior ao último commit
+// (o commit fecha o bloco de trabalho anterior; bloco novo = redeclarar e
+// reescrever o marcador).
 //
-// Extensão .cjs de propósito: num projeto com "type": "module" no
-// package.json, um .js seria tratado como ESM e o `require` crashava — e
-// num PreToolUse, exit != 2 NÃO bloqueia, ou seja, o gate morria aberto.
+// Porquê um marcador e não o transcript: a v1 fazia parse do transcript e
+// bloqueava FALSAMENTE em produção — a declaração em prosa ficava atrás de
+// um commit intermédio, fora da janela de leitura (256KB ≈ 2-3 min numa
+// sessão payload-heavy), ou ainda por flush quando o hook corria. O formato
+// do transcript não é contrato; o mtime de um ficheiro é.
+//
+// Extensão .cjs de propósito: num projeto "type": "module" um .js seria
+// ESM e o require crashava — e exit != 2 num PreToolUse NÃO bloqueia, ou
+// seja, o gate morria aberto.
 //
 // Limites, declarados honestamente:
-// - O modelo pode passar a declarar o tier por reflexo para desbloquear a
-//   edição. O valor do gate não é impedir isso — é tornar a declaração
-//   VISÍVEL ao utilizador em todos os blocos, para o push-back humano
-//   acontecer. Prosa ignorada era invisível; uma declaração reflexa não é.
-// - O matcher é Edit|Write: escrever um ficheiro por redirecção de shell
-//   (Bash) passa ao lado do gate. Buraco conhecido e aceite — pôr Bash no
-//   matcher geraria um falso positivo em cada comando.
-// - Só o TAIL do transcript (últimos 256KB) é lido, por custo: este hook
-//   corre em CADA Edit/Write e transcripts longos chegam a megabytes. Uma
-//   declaração há mais de 256KB de transcript SEM commit pelo meio não é
-//   encontrada — na prática não acontece (o passo 8 do fluxo comita por
-//   bloco), e o falso bloqueio resolve-se redeclarando o tier.
-// - Fail-open em erros de infraestrutura (sem transcript, JSON ilegível):
-//   um gate de processo não deve brickar a edição num ambiente inesperado.
-//   Fail-closed apenas no caso que ele existe para apanhar: transcript
-//   legível e sem declaração.
+// - O modelo pode escrever o marcador por reflexo. O valor do gate não é
+//   impedir isso — o comando (echo > .claude/tier-block) aparece no
+//   terminal, VISÍVEL ao utilizador, que faz o push-back. Prosa ignorada
+//   era invisível; um echo reflexo não é.
+// - O matcher é Edit|Write: escrever ficheiros por redirecção de shell
+//   (Bash) passa ao lado do gate. Buraco conhecido e aceite.
+// - Blocos com vários commits exigem reescrever o marcador após cada
+//   commit — fricção deliberada: cada commit fecha um bloco.
+// - Aresta de 1s: o timestamp do commit (git %cI) só tem resolução de
+//   segundo — marcador e commit no MESMO segundo comparam com granularidade
+//   de 1s. Irrelevante para um gate de fricção; medido nos testes.
+// - Fail-open em erros de infraestrutura (stdin ilegível, git indisponível
+//   ao datar o commit). Fail-closed no caso-alvo: marcador ausente,
+//   inválido ou anterior ao último commit.
 //
-// Instalação: ver hooks/README.md. Isenções: .md/.txt, docs/ e .claude/ —
-// o passo 0 aplica-se a código. .json NÃO é isento de propósito: mexer no
-// package.json é tier DEPS (ou LOGIC), não documentação.
+// Instalação: ver hooks/README.md (na Batuta) / CLAUDE.md (tabela de
+// hooks). Isenções: .md/.txt, docs/ e .claude/ — o passo 0 aplica-se a
+// código. .json NÃO é isento: package.json é tier DEPS, não documentação.
 
 'use strict';
 
 const fs = require('fs');
+const path = require('path');
 const { execSync } = require('child_process');
 
 const TIER_RE = /TIER:\s*(NON-CODE|DISPLAY|DEPS|LOGIC|SECURITY|DATA-MIGRATION|SCHEMA|FEATURE)/i;
 const EXEMPT_RE = /\.(md|txt)$|(^|[\\/])docs[\\/]|(^|[\\/])\.claude[\\/]|(^|[\\/])scratchpad[\\/]/i;
-const TAIL_BYTES = 256 * 1024;
 
-function readTail(path, maxBytes) {
-  const fd = fs.openSync(path, 'r');
-  try {
-    const size = fs.fstatSync(fd).size;
-    const start = Math.max(0, size - maxBytes);
-    const buf = Buffer.alloc(size - start);
-    fs.readSync(fd, buf, 0, buf.length, start);
-    let text = buf.toString('utf8');
-    if (start > 0) {
-      // descarta a primeira linha, potencialmente cortada a meio
-      const nl = text.indexOf('\n');
-      text = nl === -1 ? '' : text.slice(nl + 1);
-    }
-    return text;
-  } finally {
-    fs.closeSync(fd);
-  }
+function block(reason) {
+  process.stderr.write(
+    'Gate de tier (passo 0 do fluxo): ' + reason + ' ' +
+      'Declara o tier ao utilizador ("TIER: X. Agentes: Y. Local test: sim/nao.") ' +
+      'e escreve o marcador de bloco: echo "TIER: X. Agentes: Y. Local test: ..." > .claude/tier-block ' +
+      '— ver a tabela de tiers no CLAUDE.md.'
+  );
+  process.exit(2);
 }
 
 let raw = '';
@@ -74,19 +71,30 @@ process.stdin.on('end', () => {
   const filePath = toolInput.file_path || toolInput.notebook_path || '';
   if (!filePath || EXEMPT_RE.test(filePath)) process.exit(0);
 
-  let transcript;
+  const cwd = input.cwd || process.cwd();
+  const markerPath = path.join(cwd, '.claude', 'tier-block');
+
+  let st, content;
   try {
-    transcript = readTail(input.transcript_path, TAIL_BYTES);
+    st = fs.statSync(markerPath);
+    // strip de NULs: `>` no PowerShell escreve UTF-16LE
+    content = fs.readFileSync(markerPath, 'utf8').replace(/\u0000/g, "");
   } catch {
-    process.exit(0);
+    block('nao ha marcador de bloco (.claude/tier-block).');
+    return;
   }
 
-  // Fronteira do bloco de trabalho: o último commit. Repo sem commits (ou
-  // sem git) => qualquer declaração na sessão conta.
+  if (!TIER_RE.test(content)) {
+    block('o marcador .claude/tier-block existe mas nao contem uma declaracao "TIER: <tier>" valida.');
+    return;
+  }
+
+  // Fronteira do bloco: o último commit. Repo sem commits (ou git
+  // indisponível) => marcador válido chega.
   let lastCommitTs = 0;
   try {
     const iso = execSync('git log -1 --format=%cI', {
-      cwd: input.cwd || process.cwd(),
+      cwd,
       stdio: ['ignore', 'pipe', 'ignore'],
     })
       .toString()
@@ -96,28 +104,7 @@ process.stdin.on('end', () => {
     lastCommitTs = 0;
   }
 
-  const declared = transcript.split('\n').some((line) => {
-    if (!line.includes('TIER:')) return false;
-    let entry;
-    try {
-      entry = JSON.parse(line);
-    } catch {
-      return false;
-    }
-    if (entry.type !== 'assistant' && entry.type !== 'user') return false;
-    const ts = Date.parse(entry.timestamp || '') || 0;
-    if (ts < lastCommitTs) return false;
-    const content = JSON.stringify((entry.message && entry.message.content) || '');
-    return TIER_RE.test(content);
-  });
+  if (st.mtimeMs >= lastCommitTs) process.exit(0);
 
-  if (declared) process.exit(0);
-
-  process.stderr.write(
-    'Gate de tier (passo 0 do fluxo): nao ha declaracao "TIER: X. Agentes: Y. ' +
-      'Local test: sim/nao." neste bloco de trabalho (desde o ultimo commit). ' +
-      'Declara o tier ao utilizador ANTES de editar codigo — ver a tabela de ' +
-      'tiers no CLAUDE.md.'
-  );
-  process.exit(2);
+  block('o marcador .claude/tier-block e anterior ao ultimo commit — o bloco fechou; redeclara o tier deste bloco novo.');
 });

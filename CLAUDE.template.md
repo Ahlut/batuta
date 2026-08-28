@@ -118,7 +118,10 @@ antes de qualquer push, independentemente do resto.
    imediato se o tier estiver errado.
    Este passo e IMPOSTO pelo harness, nao so pedido: o hook PreToolUse
    `check-tier-declared` (ver "Hooks automaticos") bloqueia Edit/Write em
-   ficheiros de codigo se nao houver declaracao TIER desde o ultimo commit.
+   ficheiros de codigo sem um MARCADOR DE BLOCO valido. Ao declarar o tier,
+   escrever tambem o marcador (visivel no terminal):
+     echo "TIER: X. Agentes: Y. Local test: sim/nao." > .claude/tier-block
+   O marcador expira no commit (bloco novo = redeclarar + reescrever).
 1. Perceber o pedido -> confirmar se ambiguo
 2. Ler codigo existente antes de escrever (nunca assumir)
    2a. <!-- ADAPTAR: regra "nunca inventar acesso a superficie gerida por
