@@ -31,6 +31,22 @@ Um conjunto de ficheiros para colar num projecto novo:
 - **`.claude-plugin/`** — manifesto de plugin: este repo é instalável
   directamente no Claude Code (ver "Como adoptar").
 
+As peças e a direcção do fluxo de melhoria:
+
+```mermaid
+flowchart LR
+    BA["Batuta (upstream)"] -->|"plugin ou copy-paste"| projecto
+    subgraph projecto["Projecto que adopta"]
+        CM["CLAUDE.md — o índice<br/>(o contexto específico vive aqui)"]
+        AG[".claude/agents/<br/>6 papéis genéricos"]
+        SK[".claude/skills/"]
+        TB["gate de tier<br/>(hook PreToolUse)"]
+        PP["pre-push (git)<br/>lint + test"]
+    end
+    AG -->|"lêem primeiro"| CM
+    projecto -->|"lições aprendidas sobem"| BA
+```
+
 ## Filosofia
 
 **Proporcionalidade ao risco.** Processo leve onde o custo de um erro é
@@ -51,6 +67,36 @@ baixo; processo rigoroso onde o custo é alto. Isto aparece em três sítios:
 A framework não existe para adicionar processo — existe para que o processo
 que já vale a pena (revisão de segurança antes de RLS, testes antes de
 mergear lógica financeira) aconteça sempre, e o resto não aconteça à toa.
+
+### O fluxo, num relance
+
+Como uma mudança atravessa a framework — o tier decide que agentes correm e
+que gates a seguram:
+
+```mermaid
+flowchart TD
+    P["Pedido de mudança"] --> G0["Passo 0 — declarar TIER ao utilizador<br/>+ marcador .claude/tier-block<br/>(o gate PreToolUse impõe)"]
+    G0 --> T{"Tier?"}
+    T -->|"NON-CODE · DISPLAY · DEPS"| I0["Implementar<br/>(sem agentes)"]
+    T -->|"LOGIC"| I1["Implementar"]
+    T -->|"SECURITY · DATA-MIGRATION"| SP["Security pré (opus)<br/>pode mudar o desenho"]
+    T -->|"SCHEMA · FEATURE"| AR["Architect (opus)<br/>spec comitada em docs/specs/<br/>ANTES de implementar"]
+    AR --> SP
+    SP --> I2["Implementar<br/>Frontend / Backend (sonnet)"]
+    I1 --> Q["QA (sonnet)<br/>escreve os testes:<br/>spec primeiro, código depois"]
+    I2 --> Q
+    I2 --> SS["Security pós (opus)<br/>sobre o diff final"]
+    Q --> V["6.5 — correr a app e percorrer<br/>o fluxo alterado (mudanças de UI)"]
+    SS --> V
+    I0 --> C
+    V --> C["Commit — typecheck a zero<br/>fecha o bloco (o marcador expira)"]
+    C --> PU["Push — pre-push corre lint + test<br/>(bloqueia se falhar)"]
+    PU --> CI["CI / deploy do projecto"]
+```
+
+QA e Security pós podem correr em paralelo — o código já existe. O ramo da
+esquerda é o ponto da framework: ler, analisar e mudar copy **não invoca
+agente nenhum**; o fan-out completo reserva-se para onde o risco o paga.
 
 ### Porque isto não é "3 agentes sempre"
 
