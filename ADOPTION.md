@@ -170,6 +170,30 @@ Duas camadas, duas decisões:
   opcional, específico de ecossistema, só compensa quando o projecto já tem
   CI a sério.
 
+**Como se detectam as vulnerabilidades** (o sensor sem o qual as camadas
+não funcionam): um auditor compara as versões do lockfile com uma base de
+dados de advisories públicos (GitHub Advisory Database, OSV) e falha quando
+encontra uma vulnerabilidade conhecida acima do limiar. Cada ecossistema
+tem o seu — `npm audit` (Node), `pip-audit` (Python), `cargo audit` (Rust),
+`govulncheck` (Go), `osv-scanner` (multi-ecossistema). Três sítios onde o
+correr, do mais forte ao mais leve:
+
+1. **No CI, como gate** — falha o pipeline com HIGH/CRITICAL em
+   dependências de produção (ex.: `npm audit --omit=dev`). É a camada que
+   bloqueia deploys.
+2. **Alertas da plataforma** (Dependabot/Renovate ou equivalente) —
+   vigilância contínua entre pushes, com PRs de bump automáticos se se
+   quiser.
+3. **Informativo na sessão** — um hook de arranque que imprime o estado (o
+   projecto de origem corre o audit num SessionStart e mostra "0
+   high/critical" ao abrir cada sessão): não bloqueia, mantém o número à
+   vista de quem trabalha.
+
+Nota honesta: o auditor só vê vulnerabilidades CONHECIDAS — com advisory
+publicado. É exactamente por isso que o cooldown existe como camada
+separada: cobre a janela em que um pacote malicioso acabado de publicar
+ainda não tem advisory nenhum.
+
 O que NÃO é opcional é a decisão ser explícita: adoptar as camadas, ou
 declarar a ausência na secção "O que realmente bloqueia (e o que não)" do
 `CLAUDE.md` adaptado. Um projecto sem audit nem cooldown pode ser uma
