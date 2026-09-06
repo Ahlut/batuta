@@ -403,8 +403,9 @@ git push    →  pre-push hook:   {{LINT_CMD}} + {{TEST_CMD}}
 
 **NAO bloqueia:** <!-- listar deliberadamente: typecheck se nao for gate,
 E2E se o deploy nao depender dele, review de code owners se o fluxo for push
-directo sem PR, etc. Uma lista vazia aqui e suspeita — quase nenhum
-pipeline bloqueia tudo. -->
+directo sem PR, audit de dependencias/gate de supply-chain se nao existirem
+(ver ADOPTION.md §7 — a ausencia declara-se, nao se omite), etc. Uma lista
+vazia aqui e suspeita — quase nenhum pipeline bloqueia tudo. -->
 
 ### Code review
 

@@ -158,10 +158,23 @@ maduros costumam fazer. Escrevê-lo cedo demais produz um documento que
 descreve rituais hipotéticos, não reais — e isso não se distingue de ficção
 até alguém tentar segui-lo.
 
-## 7. Gate de cooldown de dependências (supply-chain)
+## 7. Supply-chain: audit + gate de cooldown de dependências
 
-Ver `hooks/README.md` — decisão explicada ali. Resumo: opcional, específico
-de ecossistema, só compensa quando o projecto já tem CI a sério.
+Duas camadas, duas decisões:
+
+- **Audit de vulnerabilidades no CI** (dependências *velhas* com CVEs) — a
+  forma canónica está na §3; monta-se no CI do projecto, a Batuta não envia
+  CI nenhum.
+- **Gate de cooldown** (dependências *demasiado novas*, defesa
+  supply-chain) — ver `hooks/README.md`, decisão explicada ali. Resumo:
+  opcional, específico de ecossistema, só compensa quando o projecto já tem
+  CI a sério.
+
+O que NÃO é opcional é a decisão ser explícita: adoptar as camadas, ou
+declarar a ausência na secção "O que realmente bloqueia (e o que não)" do
+`CLAUDE.md` adaptado. Um projecto sem audit nem cooldown pode ser uma
+escolha razoável na fase dele — sem gate NENHUM *e sem o dizer* é o
+silêncio que esta framework existe para eliminar.
 
 ## 8. Checklist final antes de considerar a adopção terminada
 
@@ -176,6 +189,9 @@ de ecossistema, só compensa quando o projecto já tem CI a sério.
       (secção 4)
 - [ ] A fonte de verdade visual está declarada no `CLAUDE.md` — ou a sua
       ausência está explícita (secção 5)
+- [ ] Supply-chain decidido explicitamente: audit de vulnerabilidades no CI
+      e/ou gate de cooldown adoptados, OU a ausência declarada em "O que
+      realmente bloqueia" do `CLAUDE.md` (secção 7)
 - [ ] `docs/security-checklist.md` e `docs/test-conventions.md` foram
       criados (mesmo que curtos) — o `CLAUDE.md` aponta para eles mas não
       os substitui
