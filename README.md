@@ -5,6 +5,15 @@
 **A batuta é do orquestrador.** Framework de desenvolvimento AI-first: tu
 diriges, os agentes tocam — e o processo escala com o risco, não com o hábito.
 
+> 🇬🇧 **In English, briefly:** *Batuta* ("conductor's baton") is an AI-first
+> development framework for Claude Code, extracted from months of building a
+> real production SaaS: an 8-tier risk ladder that decides which review
+> agents run (reading code invokes none; touching auth or money invokes
+> them all), read-only adversarial reviewers, harness-enforced gates, and
+> token-cost containment rules paid for by real incidents. Docs are in
+> Portuguese by design — the diagrams, agent files and hook code speak for
+> themselves, and issues/PRs in English are welcome.
+
 Extraída de ~4 meses de uso real no desenvolvimento de um produto SaaS em
 produção, e reempacotada para arrancar em qualquer projecto novo. Não é
 teoria — é o processo tal como decantou desse uso real, com os incidentes que
