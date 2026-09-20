@@ -125,7 +125,10 @@ Decide per project (the questions, not the answers):
 
 - **Where does the visual source of truth live?** A doc in the repo (e.g.
   `docs/design-system.md`), a token export from a design tool, an installed
-  design skill — or nothing formal.
+  design skill — or nothing formal. If you want it machine-readable, the
+  `DESIGN.md` format (google-labs-code/design.md: YAML front matter with the
+  tokens, prose for the rationale, a contrast lint) is one option; a plain
+  markdown doc the agents read first is another. Neither is required.
 - **Who can change it, and what happens when the code and it diverge?**
   (which of the two gets fixed?)
 - **Point to it from the adapted `CLAUDE.md`'s "Reference documentation"

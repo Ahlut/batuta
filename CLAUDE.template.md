@@ -422,6 +422,7 @@ additional manual gate (human PR review). -->
 | `{{BACKLOG_DOC}}` | **The only list that counts** — everything open; new items go HERE |
 | `docs/security-checklist.md` | Security checklist (single source) |
 | `docs/test-conventions.md` | Test conventions (single source) |
+| `docs/design-system.md` | Visual source of truth — tokens, spacing, component rules (single source) <!-- ADAPT: only if the project has a UI; delete the row otherwise — see ADOPTION.md §5 --> |
 | `docs/token-costs.md` | Agent cost containment rules (R1-R7) |
 
 <!-- ADAPT: add here other single-source docs the project creates (design
