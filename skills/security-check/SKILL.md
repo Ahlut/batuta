@@ -1,36 +1,36 @@
 ---
 name: security-check
-description: Análise de segurança das mudanças recentes — corre o agente Security sobre o git diff da área modificada. Usar depois de implementar em tier SECURITY, DATA-MIGRATION, SCHEMA ou FEATURE, antes do commit.
+description: Security analysis of recent changes — runs the Security agent over the git diff of the modified area. Use after implementing in the SECURITY, DATA-MIGRATION, SCHEMA or FEATURE tiers, before the commit.
 ---
 
-Analisa a seguranca da area de codigo modificada recentemente.
+Analyzes the security of the recently modified code area.
 
 ## Workflow
 
-1. **Identificar scope**: verifica `git diff` para perceber que ficheiros mudaram
-2. **Analisar**: invoca o agente Security (`.claude/agents/security.md`) para analise completa
-3. **Checklist**: verifica todos os items em `docs/security-checklist.md`
-4. **Backend**: se envolve tabelas/regras de autorizacao/funcoes privilegiadas,
-   invoca o agente Backend (`.claude/agents/backend.md`) para validar
-5. **Dependencias**: se foram adicionadas ou actualizadas deps, corre o audit
-   de vulnerabilidades do gestor de pacotes do projecto
-6. **Corrigir**: se encontrar issues CRITICA ou ALTA, corrige imediatamente
-7. **Reportar**: produz relatorio com formato abaixo
+1. **Identify scope**: check `git diff` to see which files changed
+2. **Analyze**: invoke the Security agent (`.claude/agents/security.md`) for a full analysis
+3. **Checklist**: verify every item in `docs/security-checklist.md`
+4. **Backend**: if tables/authorization rules/privileged functions are
+   involved, invoke the Backend agent (`.claude/agents/backend.md`) to validate
+5. **Dependencies**: if deps were added or updated, run the project's
+   package-manager vulnerability audit
+6. **Fix**: on CRITICAL or HIGH issues, fix immediately
+7. **Report**: produce a report in the format below
 
 ## Output
 
 ```
-## Analise de Seguranca — [area analisada]
+## Security Analysis — [area reviewed]
 
-### Issues encontradas
-[CRITICA/ALTA/MEDIA/BAIXA] — Descricao
-- Ficheiro: path/to/file:linha
-- Risco: o que pode acontecer
-- Correcao: como resolver (ou ja corrigido)
+### Issues found
+[CRITICAL/HIGH/MEDIUM/LOW] — Description
+- File: path/to/file:line
+- Risk: what can happen
+- Fix: how to resolve it (or already fixed)
 
-### Verificacoes OK
-- Lista do que esta correto
+### Checks OK
+- List of what is correct
 
-### Recomendacoes
-- Melhorias opcionais
+### Recommendations
+- Optional improvements
 ```

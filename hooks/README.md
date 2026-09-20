@@ -1,87 +1,90 @@
-# Hooks — instalação
+# Hooks — installation
 
-> **Antes de instalar qualquer hook desta pasta, lê o conteúdo dele.** Quem
-> clona um projecto que usa a Batuta passa a ter scripts a correr
-> automaticamente (no push, ou em cada edição do assistente) sem
-> necessariamente ter reparado. São ~25-100 linhas cada — a leitura custa um
-> minuto e é a diferença entre adoptar um gate e correr código alheio às cegas.
+> **Before installing any hook from this folder, read its content.**
+> Whoever clones a project that uses Batuta ends up with scripts running
+> automatically (on push, or on every assistant edit) without necessarily
+> having noticed. They are ~25-100 lines each — reading them costs a
+> minute, and it is the difference between adopting a gate and running
+> someone else's code blind.
 
-## Pre-push (núcleo)
+## Pre-push (core)
 
-`pre-push` corre lint + testes antes de cada `git push` e bloqueia o push se
-falharem. É a rede de segurança base do fluxo de 9 passos — corre sempre,
-independentemente do tier da mudança.
+`pre-push` runs lint + tests before every `git push` and blocks the push
+if they fail. It is the base safety net of the 9-step flow — it always
+runs, whatever the change's tier.
 
-Nota fail-closed: `npm test` **falha num projecto sem script de teste** (o
-default do npm sai com erro) — o que bloqueia o push. É deliberado (um
-projecto sem testes não devia ter a rede de segurança em silêncio a fingir
-que corre), mas convém saber antes de estranhar: ou se adiciona uma suite,
-ou se adapta o comando no `pre-push`.
+Fail-closed note: `npm test` **fails in a project with no test script**
+(npm's default exits with an error) — which blocks the push. That is
+deliberate (a project without tests shouldn't have its safety net silently
+pretending to run), but it's worth knowing before it surprises you: either
+add a suite, or adapt the command in `pre-push`.
 
-Instalação (projecto Node/npm):
+Installation (Node/npm project):
 
-1. Copiar `pre-push` e `install-hooks.js` para `scripts/` no projecto.
-2. Editar `pre-push` — trocar `npm run lint` / `npm test` pelos comandos
-   reais do projecto se for outra stack.
-3. Adicionar ao `package.json`:
+1. Copy `pre-push` and `install-hooks.js` into `scripts/` in the project.
+2. Edit `pre-push` — swap `npm run lint` / `npm test` for the project's
+   real commands if it is another stack.
+3. Add to `package.json`:
    ```json
    { "scripts": { "prepare": "node scripts/install-hooks.js" } }
    ```
-   `prepare` corre automaticamente a seguir a `npm install`, o que copia o
-   hook para `.git/hooks/pre-push` em qualquer máquina que clone o
-   repositório — não é preciso instalar manualmente.
-4. Confirmar: `npm install` deve imprimir
+   `prepare` runs automatically after `npm install`, which copies the hook
+   into `.git/hooks/pre-push` on any machine that clones the repository —
+   no manual install needed.
+4. Confirm: `npm install` should print
    `install-hooks: installed pre-push`.
 
-Para outro gestor de pacotes/ecossistema, portar a mesma ideia: copiar
-`pre-push` para `.git/hooks/pre-push` e marcar executável, disparado a partir
-do lifecycle hook equivalente ao `prepare` do npm (ex.: `postinstall` de
-outro gestor, ou um `Makefile`/script de setup corrido uma vez).
+For another package manager/ecosystem, port the same idea: copy
+`pre-push` into `.git/hooks/pre-push` and mark it executable, triggered
+from the lifecycle hook equivalent to npm's `prepare` (e.g. another
+manager's `postinstall`, or a `Makefile`/setup script run once).
 
-## check-tier-declared (gate do passo 0, hook do harness)
+## check-tier-declared (the step-0 gate, harness hook)
 
-O passo 0 do fluxo ("declarar TIER antes de escrever código") era prosa — e
-prosa ignora-se, como a própria "Regra anti-skip" do CLAUDE.md documenta. O
-`check-tier-declared.cjs` torna-o mecânico: é um hook **PreToolUse** do Claude
-Code que intercepta Edit/Write e bloqueia a edição de ficheiros de código sem
-um **marcador de bloco** válido — o ficheiro `.claude/tier-block`
-(gitignored), escrito no terminal ao declarar o tier:
+Step 0 of the flow ("declare the TIER before writing code") used to be
+prose — and prose gets ignored, as CLAUDE.md's own "anti-skip rule"
+documents. `check-tier-declared.cjs` makes it mechanical: it is a Claude
+Code **PreToolUse** hook that intercepts Edit/Write and blocks editing
+code files without a valid **block marker** — the file
+`.claude/tier-block` (gitignored), written in the terminal when the tier
+is declared:
 
 ```
-echo "TIER: X. Agentes: Y. Local test: sim/nao." > .claude/tier-block
+echo "TIER: X. Agents: Y. Local test: yes/no." > .claude/tier-block
 ```
 
-O gate exige que o marcador contenha uma declaração `TIER: <tier>` válida e
-tenha mtime **posterior ao último commit** (o commit fecha o bloco; bloco
-novo = redeclarar ao utilizador + reescrever o marcador).
+The gate requires the marker to contain a valid `TIER: <tier>`
+declaration and to have an mtime **later than the last commit** (the
+commit closes the block; new block = redeclare to the user + rewrite the
+marker).
 
-Porquê um marcador e não o transcript: a v1 parseava o transcript da sessão
-e **bloqueava falsamente em produção** — a declaração em prosa ficava atrás
-de um commit intermédio, fora da janela de leitura (256KB ≈ 2-3 minutos numa
-sessão payload-heavy), ou ainda por flush quando o hook corria. O formato do
-transcript não é contrato; o mtime de um ficheiro é.
+Why a marker and not the transcript: v1 parsed the session transcript and
+**blocked falsely in production** — the prose declaration ended up behind
+an intermediate commit, outside the read window (256KB ≈ 2-3 minutes in a
+payload-heavy session), or not yet flushed when the hook ran. The
+transcript format is not a contract; a file's mtime is.
 
-Âmbito e limites (declarados no topo do próprio script):
-- Ficheiros `.md`/`.txt`, `docs/` e `.claude/` estão isentos — o passo 0
-  aplica-se a código. `.json` NÃO é isento (package.json é tier DEPS).
-- O modelo pode escrever o marcador por reflexo — mas o echo aparece no
-  terminal, **visível ao utilizador**, que faz o push-back. É fricção
-  deliberada e sinal de papel, não uma sandbox.
-- Bash fica fora do matcher; blocos com vários commits reescrevem o
-  marcador após cada commit; o timestamp do git tem resolução de 1s
-  (aresta documentada); fail-open em erros de infraestrutura.
+Scope and limits (declared at the top of the script itself):
+- `.md`/`.txt` files, `docs/` and `.claude/` are exempt — step 0 applies
+  to code. `.json` is NOT exempt (package.json is the DEPS tier).
+- The model can write the marker reflexively — but the echo shows up in
+  the terminal, **visible to the user**, who pushes back. It is
+  deliberate friction and a role signal, not a sandbox.
+- Bash stays outside the matcher; multi-commit blocks rewrite the marker
+  after each commit; git's timestamp has 1s resolution (documented edge);
+  fail-open on infrastructure errors.
 
-A extensão `.cjs` não é gosto: com `.js`, qualquer projecto `"type": "module"`
-tratava o script como ESM, o `require` crashava, e — como exit ≠ 2 num
-PreToolUse não bloqueia — o gate morria ABERTO com stack trace no stderr.
-Manter `.cjs` ao copiar.
+The `.cjs` extension is not taste: with `.js`, any `"type": "module"`
+project treated the script as ESM, `require` crashed, and — since exit ≠ 2
+in a PreToolUse does not block — the gate died OPEN with a stack trace on
+stderr. Keep `.cjs` when copying.
 
-Instalação manual (sem plugin):
+Manual installation (without the plugin):
 
-0. Acrescentar `.claude/tier-block` ao `.gitignore` do projecto (o marcador
-   é efémero, por sessão/worktree — nunca se comita).
-1. Copiar `check-tier-declared.cjs` para `.claude/hooks/` no projecto.
-2. Acrescentar ao `.claude/settings.json` do projecto (merge, não substituir):
+0. Add `.claude/tier-block` to the project's `.gitignore` (the marker is
+   ephemeral, per session/worktree — it is never committed).
+1. Copy `check-tier-declared.cjs` into `.claude/hooks/` in the project.
+2. Add to the project's `.claude/settings.json` (merge, don't replace):
    ```json
    {
      "hooks": {
@@ -97,37 +100,37 @@ Instalação manual (sem plugin):
    }
    ```
 
-Instalação via plugin: o `hooks/hooks.json` desta pasta é o manifesto de
-hooks do plugin da Batuta — instalar o plugin **activa este gate
-automaticamente** (o caminho `${CLAUDE_PLUGIN_ROOT}` resolve para a pasta do
-plugin instalado). Se não quiseres o gate, usa a adopção manual e não copies
-este hook.
+Installation via plugin: this folder's `hooks/hooks.json` is Batuta's
+plugin hooks manifest — installing the plugin **activates this gate
+automatically** (the `${CLAUDE_PLUGIN_ROOT}` path resolves to the
+installed plugin's folder). If you don't want the gate, use manual
+adoption and don't copy this hook.
 
-Evolução prevista (não implementada): um segundo gate que valide, ao fechar
-um bloco, que os agentes obrigatórios do tier declarado correram mesmo.
-Exige tracking de estado entre eventos do harness; fica documentado como
-próximo passo em vez de meio-feito.
+Planned evolution (not implemented): a second gate validating, when a
+block closes, that the declared tier's mandatory agents actually ran. It
+requires state tracking across harness events; it stays documented as a
+next step instead of shipped half-done.
 
-## Gate de cooldown de dependências — opcional, não incluído
+## Dependency cooldown gate — optional, not included
 
-Um projecto de origem real tinha um segundo gate,
-`scripts/check-dependency-cooldown.mjs`: bloqueia no CI a adopção de
-dependências publicadas há menos de 7 dias, como defesa contra ataques de
-supply-chain que são detectados e removidos pela comunidade em poucos dias
-mas ainda não a tempo de um `npm audit` os apanhar.
+A real source project had a second gate,
+`scripts/check-dependency-cooldown.mjs`: it blocks, in CI, the adoption of
+dependencies published less than 7 days ago, as a defense against
+supply-chain attacks that get detected and removed by the community within
+days — but not in time for `npm audit` to catch them.
 
-**Não veio para este template** porque:
-- É específico do registry npm (consulta `registry.npmjs.org` directamente)
-  — noutro ecossistema (PyPI, crates.io, RubyGems) a mecânica de consulta de
-  timestamp de publicação muda por completo.
-- Tem peso próprio (~340 linhas): parsing do lockfile, allowlist com schema
-  próprio, guarda fail-closed, retries de rede. Vale a pena escrever de novo
-  a pensar no gestor de pacotes real do projecto, não adaptar às pressas.
-- Só compensa o custo de manutenção quando o projecto já tem CI a sério e um
-  apetite real por essa camada extra de defesa supply-chain — nem todo o
-  projecto novo está nesse ponto no dia 1.
+**It did not come into this template** because:
+- It is npm-registry specific (it queries `registry.npmjs.org` directly)
+  — in another ecosystem (PyPI, crates.io, RubyGems) the mechanics of
+  querying publish timestamps change completely.
+- It has real weight (~340 lines): lockfile parsing, an allowlist with its
+  own schema, a fail-closed guard, network retries. It is worth rewriting
+  against the new project's real package manager, not adapting in a hurry.
+- It only pays its maintenance cost once the project has serious CI and a
+  real appetite for that extra supply-chain layer — not every new project
+  is there on day 1.
 
-Se o projecto adoptar este gate mais tarde, documentar no `CLAUDE.md`
-adaptado (secção "Seguranca" → "Supply-chain") a mesma coisa que um projecto
-maduro deve documentar: quais as camadas (install local vs. gate de CI vs.
-checklist), onde vive a allowlist, e quem a pode editar.
+If the project adopts this gate later, document in the adapted `CLAUDE.md`
+("Security" → "Supply chain" section) the same things a mature project
+should document: which layers exist (local install vs CI gate vs
+checklist), where the allowlist lives, and who can edit it.

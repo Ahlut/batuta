@@ -1,264 +1,264 @@
 # Batuta
 
-[![Licença: MIT](https://img.shields.io/badge/Licen%C3%A7a-MIT-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**A batuta é do orquestrador.** Framework de desenvolvimento AI-first: tu
-diriges, os agentes tocam — e o processo escala com o risco, não com o hábito.
+**The baton belongs to the conductor.** *Batuta* is Portuguese for a
+conductor's baton — an AI-first development framework where you conduct,
+the agents play, and **process scales with risk, not with habit**.
 
-> 🇬🇧 **In English, briefly:** *Batuta* ("conductor's baton") is an AI-first
-> development framework for Claude Code, extracted from months of building a
-> real production SaaS: an 8-tier risk ladder that decides which review
-> agents run (reading code invokes none; touching auth or money invokes
-> them all), read-only adversarial reviewers, harness-enforced gates, and
-> token-cost containment rules paid for by real incidents. Docs are in
-> Portuguese by design — the diagrams, agent files and hook code speak for
-> themselves, and issues/PRs in English are welcome.
+> 🇵🇹 **Em português, brevemente:** a Batuta nasceu em português e foi
+> traduzida para chegar mais longe. A história original vive no git; issues
+> e PRs em português continuam a ser bem-vindos.
 
-Extraída de ~4 meses de uso real no desenvolvimento de um produto SaaS em
-produção, e reempacotada para arrancar em qualquer projecto novo. Não é
-teoria — é o processo tal como decantou desse uso real, com os incidentes que
-o moldaram registados nos docs (de forma anónima) em vez de apagados.
+Extracted from months of real use building a production SaaS, and repackaged
+to bootstrap any new project. This is not theory — it is the process as it
+settled out of that real use, with the incidents that shaped it recorded in
+the docs (anonymized) instead of erased.
 
 ---
 
-## O que é isto
+## What this is
 
-Um conjunto de ficheiros para colar num projecto novo:
+A set of files to drop into a new project:
 
-- **`CLAUDE.template.md`** — o índice que a Claude lê no início de cada
-  sessão: fluxo de desenvolvimento, tabela de tiers, tie-breaks, mecanismo de
-  agentes.
-- **`agents/`** — 6 definições de agente (papel, quando invocar, output
-  esperado). Genéricos por desenho: o contexto específico do projecto vive
-  no `CLAUDE.md`, que cada agente lê primeiro — assim a via plugin e a via
-  copy-paste dão o mesmo resultado.
-- **`skills/`** — esqueletos de skills que orquestram os agentes.
-- **`hooks/`** — hook de pre-push (lint + test) e instalador.
-- **`docs/custo-tokens.md`** — regras de contenção de custo de fan-out de
-  agentes (agnósticas, copiadas tal como estão).
-- **`ADOPTION.md`** — checklist do que decidir por projecto.
-- **`.claude-plugin/`** — manifesto de plugin: este repo é instalável
-  directamente no Claude Code (ver "Como adoptar").
+- **`CLAUDE.template.md`** — the index Claude reads at the start of every
+  session: development flow, tier table, tie-breaks, agent mechanism.
+- **`agents/`** — 6 agent definitions (role, when to invoke, expected
+  output). Generic by design: project-specific context lives in `CLAUDE.md`,
+  which every agent reads first — so the plugin path and the copy-paste
+  path produce the same result.
+- **`skills/`** — skill skeletons that orchestrate the agents.
+- **`hooks/`** — pre-push hook (lint + test) plus installer, and the
+  tier-gate hook.
+- **`docs/token-costs.md`** — containment rules for agent fan-out cost
+  (stack-agnostic, copied as-is).
+- **`ADOPTION.md`** — the checklist of per-project decisions.
+- **`.claude-plugin/`** — plugin manifest: this repo installs directly
+  into Claude Code (see "How to adopt").
 
-As peças e a direcção do fluxo de melhoria:
+The pieces, and the direction the improvement loop flows:
 
 ```mermaid
 flowchart LR
-    BA["Batuta (upstream)"] -->|"plugin ou copy-paste"| projecto
-    subgraph projecto["Projecto que adopta"]
-        CM["CLAUDE.md — o índice<br/>(o contexto específico vive aqui)"]
-        AG[".claude/agents/<br/>6 papéis genéricos"]
+    BA["Batuta (upstream)"] -->|"plugin or copy-paste"| project
+    subgraph project["Adopting project"]
+        CM["CLAUDE.md — the index<br/>(project context lives here)"]
+        AG[".claude/agents/<br/>6 generic roles"]
         SK[".claude/skills/"]
-        TB["gate de tier<br/>(hook PreToolUse)"]
+        TB["tier gate<br/>(PreToolUse hook)"]
         PP["pre-push (git)<br/>lint + test"]
     end
-    AG -->|"lêem primeiro"| CM
-    projecto -->|"lições aprendidas sobem"| BA
+    AG -->|"read first"| CM
+    project -->|"lessons learned flow up"| BA
 ```
 
-## Filosofia
+## Philosophy
 
-**Proporcionalidade ao risco.** Processo leve onde o custo de um erro é
-baixo; processo rigoroso onde o custo é alto. Isto aparece em três sítios:
+**Proportionality to risk.** Light process where a mistake is cheap;
+rigorous process where it is expensive. This shows up in three places:
 
-1. **A tabela de tiers** — 8 níveis, de NON-CODE (não invoca agente nenhum)
-   a FEATURE (Architect + Security + QA, obrigatório). Ler/analisar/planear
-   nunca dispara agentes; RLS/pagamentos/schema sempre dispara.
-2. **O overlay de custo de tokens** (`docs/custo-tokens.md`) — o fan-out
-   completo de agentes é caro. A regra não é "menos agentes sempre" — é
-   **o fan-out escala com o risco, não com o hábito**. Uma migração aditiva
-   de uma coluna não precisa da mesma coreografia que uma feature nova com
-   RLS + dinheiro.
-3. **O que NÃO se automatiza** — decisões de produto, aplicar SQL em
-   produção, loops que escrevem código sem supervisão. Ficam sempre com um
-   humano, independentemente do tier.
+1. **The tier table** — 8 levels, from NON-CODE (invokes no agent at all)
+   to FEATURE (Architect + Security + QA, mandatory). Reading, analyzing
+   and planning never trigger agents; row-level authorization, payments and
+   schema always do.
+2. **The token-cost overlay** (`docs/token-costs.md`) — the full agent
+   fan-out is expensive. The rule is not "fewer agents, always" — it is
+   **fan-out scales with risk, not with habit**. An additive one-column
+   migration does not deserve the same choreography as a new feature
+   touching authorization rules and money.
+3. **What is NOT automated** — product decisions, applying SQL in
+   production, loops that write code unsupervised. Those stay with a human,
+   whatever the tier.
 
-A framework não existe para adicionar processo — existe para que o processo
-que já vale a pena (revisão de segurança antes de RLS, testes antes de
-mergear lógica financeira) aconteça sempre, e o resto não aconteça à toa.
+The framework does not exist to add process — it exists so that the process
+already worth having (security review before authorization rules, tests
+before merging financial logic) happens every time, and the rest doesn't
+happen out of habit.
 
-### O fluxo, num relance
+### The flow, at a glance
 
-Como uma mudança atravessa a framework — o tier decide que agentes correm e
-que gates a seguram:
+How a change travels through the framework — the tier decides which agents
+run and which gates hold it:
 
 ```mermaid
 flowchart TD
-    P["Pedido de mudança"] --> G0["Passo 0 — declarar TIER ao utilizador<br/>+ marcador .claude/tier-block<br/>(o gate PreToolUse impõe)"]
+    P["Change request"] --> G0["Step 0 — declare TIER to the user<br/>+ .claude/tier-block marker<br/>(the PreToolUse gate enforces it)"]
     G0 --> T{"Tier?"}
-    T -->|"NON-CODE · DISPLAY · DEPS"| I0["Implementar<br/>(sem agentes)"]
-    T -->|"LOGIC"| I1["Implementar"]
-    T -->|"SECURITY · DATA-MIGRATION"| SP["Security pré (opus)<br/>pode mudar o desenho"]
-    T -->|"SCHEMA · FEATURE"| AR["Architect (opus)<br/>spec comitada em docs/specs/<br/>ANTES de implementar"]
+    T -->|"NON-CODE · DISPLAY · DEPS"| I0["Implement<br/>(no agents)"]
+    T -->|"LOGIC"| I1["Implement"]
+    T -->|"SECURITY · DATA-MIGRATION"| SP["Security pre-review (opus)<br/>can change the design"]
+    T -->|"SCHEMA · FEATURE"| AR["Architect (opus)<br/>spec committed to docs/specs/<br/>BEFORE implementing"]
     AR --> SP
-    SP --> I2["Implementar<br/>Frontend / Backend (sonnet)"]
-    I1 --> Q["QA (sonnet)<br/>escreve os testes:<br/>spec primeiro, código depois"]
+    SP --> I2["Implement<br/>Frontend / Backend (sonnet)"]
+    I1 --> Q["QA (sonnet)<br/>writes the tests:<br/>spec first, code second"]
     I2 --> Q
-    I2 --> SS["Security pós (opus)<br/>sobre o diff final"]
-    Q --> V["6.5 — correr a app e percorrer<br/>o fluxo alterado (mudanças de UI)"]
+    I2 --> SS["Security post-review (opus)<br/>on the final diff"]
+    Q --> V["6.5 — run the app and walk<br/>the changed flow (UI changes)"]
     SS --> V
     I0 --> C
-    V --> C["Commit — typecheck a zero<br/>fecha o bloco (o marcador expira)"]
-    C --> PU["Push — pre-push corre lint + test<br/>(bloqueia se falhar)"]
-    PU --> CI["CI / deploy do projecto"]
+    V --> C["Commit — typecheck at zero<br/>closes the block (marker expires)"]
+    C --> PU["Push — pre-push runs lint + test<br/>(blocks on failure)"]
+    PU --> CI["Project CI / deploy"]
 ```
 
-QA e Security pós podem correr em paralelo — o código já existe. O ramo da
-esquerda é o ponto da framework: ler, analisar e mudar copy **não invoca
-agente nenhum**; o fan-out completo reserva-se para onde o risco o paga.
+QA and the Security post-review can run in parallel — the code already
+exists. The left branch is the point of the framework: reading, analyzing
+and copy changes invoke **no agent at all**; the full fan-out is reserved
+for where the risk pays for it.
 
-### Porque isto não é "3 agentes sempre"
+### Why this is not "3 agents, always"
 
-O ficheiro `docs/custo-tokens.md` nasceu de um incidente real: uma feature
-esgotou sozinha um limite de sessão de 5h porque o fluxo completo (Architect
-→ Security-pré → Frontend → QA → Security-pós) correu 3 vezes seguidas para
-3 sub-partes da mesma feature, cada uma a reprocessar contexto grande. A
-lição não foi "cortar segurança" — foi escalar a coreografia ao risco real
-de cada sub-parte, não ao tier nominal da feature inteira.
+`docs/token-costs.md` was born from a real incident: one feature single-
+handedly exhausted a 5-hour session limit because the full flow (Architect
+→ Security-pre → Frontend → QA → Security-post) ran 3 times in a row for 3
+sub-parts of the same feature, each reprocessing a large context. The lesson
+was not "cut security" — it was to scale the choreography to the real risk
+of each sub-part, not to the nominal tier of the whole feature.
 
 ---
 
-## Como adoptar — plugin ou copy-paste
+## How to adopt — plugin or copy-paste
 
-**Via plugin (menos fricção)** — o repo é um marketplace de plugin do Claude
-Code. No projecto onde queres a framework:
+**Via plugin (least friction)** — this repo is a Claude Code plugin
+marketplace. In the project where you want the framework:
 
 ```
 /plugin marketplace add Ahlut/batuta
 /plugin install batuta@batuta
 ```
 
-Isto instala os **agentes**, as **skills** e o **hook PreToolUse do gate de
-tier** (sim, o gate fica activo ao instalar — é o objectivo do plugin; lê
-`hooks/check-tier-declared.cjs` antes, como com qualquer hook). Ficam de fora,
-por natureza: o `CLAUDE.md` do projecto (conteúdo por-projecto — preencher a
-partir do `CLAUDE.template.md`, ver checklist abaixo) e o hook de **pre-push
-do git** (vive em `scripts/` + `package.json`, ver `hooks/README.md`).
+This installs the **agents**, the **skills** and the **tier-gate PreToolUse
+hook** (yes, the gate becomes active on install — that is the point of the
+plugin; read `hooks/check-tier-declared.cjs` first, as with any hook). Two
+things stay out by nature: the project's `CLAUDE.md` (per-project content —
+fill it in from `CLAUDE.template.md`, see the checklist below) and the git
+**pre-push hook** (it lives in `scripts/` + `package.json`, see
+`hooks/README.md`).
 
-**Por copy-paste — 3 cenários, prompts prontos a copiar:**
+**By copy-paste — 3 scenarios, prompts ready to copy:**
 
-**A. Projecto novo, nascido do zero** — no GitHub, botão **"Use this
-template"** sobre este repo cria o repo do projecto já com a Batuta dentro.
-Primeira instrução ao Claude:
+**A. Brand-new project, born from zero** — on GitHub, the **"Use this
+template"** button on this repo creates your project repo with Batuta
+already inside. First instruction to Claude:
 
-> Este repo nasceu do template Batuta. Segue o ADOPTION.md e o checklist do
-> README: preenche os placeholders do CLAUDE.template.md (renomeia para
-> CLAUDE.md), instala o hook de pre-push e pergunta-me só o que não
-> conseguires decidir dos ficheiros do projecto.
+> This repo was born from the Batuta template. Follow ADOPTION.md and the
+> README checklist: fill in the CLAUDE.template.md placeholders (rename it
+> to CLAUDE.md), install the pre-push hook, and only ask me what you cannot
+> decide from the project files.
 
-**B. Projecto novo com scaffolding próprio** (Vite/Next/etc. já criados —
-a via recomendada na maioria dos casos; a framework é processo, não código):
+**B. New project with its own scaffolding** (Vite/Next/etc. already
+created — the recommended path in most cases; the framework is process,
+not code):
 
-> Clona o repositório da Batuta para uma pasta temporária e adopta a
-> framework neste projecto seguindo o ADOPTION.md: copia CLAUDE.template.md
-> para CLAUDE.md e preenche os placeholders com a stack real deste repo,
-> copia agents/ e skills/ para .claude/, liga o pre-push aos comandos de
-> lint/test que este projecto já tem.
+> Clone the Batuta repository into a temporary folder and adopt the
+> framework in this project following ADOPTION.md: copy CLAUDE.template.md
+> to CLAUDE.md and fill the placeholders with this repo's real stack, copy
+> agents/ and skills/ into .claude/, and wire the pre-push hook to the
+> lint/test commands this project already has.
 
-**C. Projecto existente** — adopção incremental, nada se parte:
+**C. Existing project** — incremental adoption, nothing breaks:
 
-> Clona o repositório da Batuta para uma pasta temporária, lê o
-> ADOPTION.md e mapeia o que este projecto já tem. Adopta por fases: (1) o
-> CLAUDE.md com a tabela de tiers e o fluxo de 9 passos, adaptado às
-> convenções que já existem aqui; (2) os agentes; (3) o hook de pre-push.
-> Skills e CI ficam para quando doerem. Não reescrevas nada do projecto —
-> a framework entra em vigor no próximo commit, não retroactivamente.
+> Clone the Batuta repository into a temporary folder, read ADOPTION.md and
+> map what this project already has. Adopt in phases: (1) the CLAUDE.md
+> with the tier table and the 9-step flow, adapted to the conventions that
+> already exist here; (2) the agents; (3) the pre-push hook. Skills and CI
+> wait until they hurt. Do not rewrite anything in the project — the
+> framework takes effect from the next commit, not retroactively.
 
-**Melhoria contínua:** a Batuta é o upstream. Quando um projecto aprende uma
-regra nova, ela sobe aqui; os outros puxam na sessão seguinte.
+**Continuous improvement:** Batuta is the upstream. When a project learns a
+new rule, it flows up here; the others pull it in their next session.
 
-**Contribuições são bem-vindas** — issues e PRs, sobretudo lições reais
-(anonimizadas) que faltam aqui. Ver `CONTRIBUTING.md` para a regra de ouro
-antes de propor uma regra nova. Licença: MIT (`LICENSE`).
+**Contributions are welcome** — issues and PRs, especially real
+(anonymized) lessons missing here. See `CONTRIBUTING.md` for the golden
+rule before proposing a new one. License: MIT (`LICENSE`).
 
 ---
 
-## Checklist de adopção (~30 min)
+## Adoption checklist (~30 min)
 
-Checklist rápido — a versão longa com as perguntas por trás de cada passo
-está em `ADOPTION.md`.
+The quick checklist — the long version, with the questions behind each
+step, lives in `ADOPTION.md`.
 
-1. **Copiar ficheiros** (5 min)
+1. **Copy files** (5 min)
    ```bash
-   cp CLAUDE.template.md /caminho/do/projecto/CLAUDE.md
-   cp -r agents /caminho/do/projecto/.claude/agents
-   cp -r skills /caminho/do/projecto/.claude/skills
-   cp hooks/pre-push hooks/install-hooks.js /caminho/do/projecto/scripts/
-   cp docs/custo-tokens.md /caminho/do/projecto/docs/custo-tokens-e-orquestracao.md
-   mkdir -p /caminho/do/projecto/docs/specs
+   cp CLAUDE.template.md /path/to/project/CLAUDE.md
+   cp -r agents /path/to/project/.claude/agents
+   cp -r skills /path/to/project/.claude/skills
+   cp hooks/pre-push hooks/install-hooks.js /path/to/project/scripts/
+   cp docs/token-costs.md /path/to/project/docs/token-costs.md
+   mkdir -p /path/to/project/docs/specs
    ```
 
-2. **Preencher os placeholders do `CLAUDE.md`** (10 min) — ver a lista
-   completa no topo de `CLAUDE.template.md`. Os principais:
-   - `{{PROJECT_NAME}}` — nome do projecto
-   - `{{PRODUCT_SUMMARY}}` — uma frase do que o produto faz
-   - `{{ROLES}}` / `{{ROUTES}}` — se o projecto tiver roles/rotas distintas
-   - `{{STACK}}` — a stack real (linguagem, framework, DB, testes)
-   - `{{CODE_CONVENTIONS}}` — convenções de nomes/pastas do projecto
-   - Secções `<!-- ADAPTAR -->` — decidir se se aplicam e como
+2. **Fill in the `CLAUDE.md` placeholders** (10 min) — full list at the top
+   of `CLAUDE.template.md`. The main ones:
+   - `{{PROJECT_NAME}}` — project name
+   - `{{PRODUCT_SUMMARY}}` — one sentence on what the product does
+   - `{{ROLES}}` / `{{ROUTES}}` — if the project has distinct roles/routes
+   - `{{STACK}}` — the real stack (language, framework, DB, tests)
+   - `{{CODE_CONVENTIONS}}` — the project's naming/folder conventions
+   - `<!-- ADAPT -->` sections — decide whether and how each one applies
 
-3. **Decidir os tiers aplicáveis** (5 min) — a tabela de 8 tiers do template
-   assume schema + RLS + pagamentos. Um projecto sem base de dados própria
-   ou sem dinheiro tem menos tiers com peso (ver `ADOPTION.md` §1).
+3. **Decide which tiers apply** (5 min) — the template's 8-tier table
+   assumes schema + row-level authorization + payments. A project without
+   its own database or without money has fewer tiers with weight (see
+   `ADOPTION.md` §1).
 
-4. **Ligar o hook de pre-push** (5 min)
+4. **Wire the pre-push hook** (5 min)
    ```bash
-   # package.json (ou equivalente)
+   # package.json (or equivalent)
    "scripts": { "prepare": "node scripts/install-hooks.js" }
    ```
-   Editar `scripts/pre-push` para os comandos reais de lint/test do
-   projecto (o template assume `npm run lint` + `npm test` — trocar se for
-   outra stack).
+   Edit `scripts/pre-push` to the project's real lint/test commands (the
+   template assumes `npm run lint` + `npm test` — swap for another stack).
 
-5. **Decidir a lista-única de pendentes** (2 min) — manter um único sítio com
-   tudo o que está aberto (achados, decisões pendentes, follow-ups) evita que
-   o mesmo item seja redescoberto em sessões diferentes. Escolher um
-   equivalente (pode ser um ficheiro, um board, uma issue fixada) e apontar
-   para ele no `CLAUDE.md` adaptado.
+5. **Decide where the single list of open items lives** (2 min) — keeping
+   one single place with everything open (findings, pending decisions,
+   follow-ups) prevents the same item from being rediscovered across
+   sessions. Pick an equivalent (a file, a board, a pinned issue) and point
+   to it from the adapted `CLAUDE.md`.
 
-6. **Gate de cooldown de dependências — opcional** (3 min) — só faz sentido
-   se o projecto tiver `npm`/lockfile e apetite para manter
-   `scripts/check-dependency-cooldown.mjs` (não incluído neste template —
-   é específico o suficiente ao ecossistema de origem que vale a pena
-   reescrever a pensar no registry/gestor de pacotes real do novo projecto).
-   Ver nota em `hooks/README.md`.
+6. **Dependency cooldown gate — optional** (3 min) — only worth it if the
+   project has `npm`/a lockfile and the appetite to maintain
+   `scripts/check-dependency-cooldown.mjs` (not included in this template —
+   it is ecosystem-specific enough that it deserves a rewrite against the
+   new project's real registry/package manager). See the note in
+   `hooks/README.md`.
 
-Fim. A partir daqui, o fluxo de 9 passos do `CLAUDE.md` adaptado é o
-processo — não há mais setup.
-
----
-
-## O que NÃO está aqui, e porquê
-
-- **Nenhum código do produto de origem** — nem componentes, nem SQL, nem
-  lógica de negócio. Isto é só o esqueleto de processo.
-- **`security-baseline` e `security-status`** não vieram como skills
-  completas — ficaram fora do lote inicial de 2 (`security-check`,
-  `db-migration`) para manter o adopt enxuto; o padrão de frontmatter é o
-  mesmo, replicar quando o projecto precisar.
-- **Um manual de rituais de orquestração não foi copiado como está** — no
-  projecto de origem existia um segundo documento, mais longo, amarrado aos
-  rituais específicos daquele projecto (ambientes de trabalho isolados por
-  bloco, ferramentas próprias de ensaio de migrações, convenções da máquina
-  local). As secções genéricas (o ciclo por bloco de trabalho, "o que não se
-  automatiza") foram absorvidas no `CLAUDE.template.md`; o resto fica para
-  cada projecto escrever o seu próprio manual de rituais depois de os
-  rituais existirem.
-- **Nenhum CI/workflow** — o pipeline de CI do projecto de origem está
-  amarrado ao seu próprio provedor de deploy e à sua própria BD-as-a-service;
-  a ADOPTION.md diz o que um pipeline equivalente deve cobrir, mas escrever o
-  YAML fica para o projecto.
+Done. From here on, the 9-step flow in the adapted `CLAUDE.md` is the
+process — there is no more setup.
 
 ---
 
-## Proveniência
+## What is NOT here, and why
 
-Extraída de ~4 meses de uso real no desenvolvimento de um produto SaaS em
-produção — não é teoria. Os incidentes citados nos docs são reais, mas
-descritos aqui de forma anónima e genérica, sem nome de produto, sem stack
-completa atribuída a ele e sem datas de calendário: uma feature que esgotou
-sozinha uma sessão de trabalho inteira por excesso de fan-out de agentes; uma
-função com privilégios elevados que perdeu uma proteção ao ser recriada por
-cópia em vez de editada; uma regra de autorização recursiva que ficou activa
-sem se notar durante um bom tempo. Ficaram registados para que o "porquê" de
-cada regra sobreviva à cópia, sem expor detalhes do produto de onde vieram.
+- **No code from the source product** — no components, no SQL, no business
+  logic. This is the process skeleton only.
+- **`security-baseline` and `security-status`** did not ship as complete
+  skills — they stayed out of the initial batch of 2 (`security-check`,
+  `db-migration`) to keep adoption lean; the frontmatter pattern is the
+  same, replicate them when the project needs them.
+- **An orchestration rituals manual was not copied as-is** — the source
+  project has a second, longer document tied to that project's specific
+  rituals (isolated working environments per block, its own tools for
+  rehearsing migrations, local-machine conventions). The generic sections
+  (the per-block work cycle, "what is not automated") were absorbed into
+  `CLAUDE.template.md`; the rest is for each project to write as its own
+  rituals manual after the rituals exist.
+- **No CI workflow** — the source project's CI pipeline is tied to its own
+  deploy provider and its own DB-as-a-service; ADOPTION.md says what an
+  equivalent pipeline should cover, but writing the YAML belongs to the
+  project.
+
+---
+
+## Provenance
+
+Extracted from months of real use building a production SaaS — not theory.
+The incidents cited in the docs are real, but described anonymously and
+generically, with no product name, no full stack attributed to it and no
+calendar dates: a feature that single-handedly exhausted an entire working
+session through agent fan-out; a privileged function that lost a guard when
+it was recreated by copy instead of edited; a recursive authorization rule
+that stayed live unnoticed for a good while. They were kept so the "why"
+behind each rule survives the copy, without exposing details of the product
+they came from.

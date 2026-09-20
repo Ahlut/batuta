@@ -1,49 +1,49 @@
 ---
 name: db-migration
-description: Cria, valida e documenta uma migração de schema — escreve o ficheiro na pasta de migrações, produz o script de rollback e regista a migração no doc de estado de migrações. Usar em tier SCHEMA ou DATA-MIGRATION.
+description: Creates, validates and documents a schema migration — writes the file in the migrations folder, produces the rollback script and records the migration in the migrations-state doc. Use in the SCHEMA or DATA-MIGRATION tiers.
 ---
 
-Cria, valida e documenta uma migracao de schema.
+Creates, validates and documents a schema migration.
 
-## Argumentos
-- `$ARGUMENTS` — descricao da migracao (ex: "adicionar tabela de invoices")
+## Arguments
+- `$ARGUMENTS` — description of the migration (e.g. "add invoices table")
 
 ## Workflow
 
-1. **Analisar**: perceber o que precisa de mudar no schema
-2. **Verificar estado atual**: ler os tipos/schema gerados (se existirem)
-   para entender o schema existente — nao assumir
-3. **Criar migracao**: gerar o ficheiro na pasta de migracoes do projecto,
-   com timestamp/versao segundo a convencao usada
-4. **Incluir sempre**:
-   - Autorizacao activa (RLS ou equivalente) para tabelas novas
-   - Regras de autorizacao para cada role/perfil relevante
-   - Constraints para campos criticos (financeiros, obrigatorios)
-   - Indices para campos usados em queries frequentes
-   - Comentarios explicativos no SQL/DDL
-5. **Rollback**: criar script de rollback correspondente
-6. **Actualizar tipos**: regenerar os tipos gerados da base de dados, se o
-   projecto os tiver. Nao e opcional — uma tabela aplicada mas nao
-   regenerada nos tipos falha na primeira query que a usa.
-7. **Registar**: acrescentar linha no doc de estado de migracoes
-   (`docs/migrations-state.md` ou equivalente) com estado `por aplicar`
+1. **Analyze**: understand what needs to change in the schema
+2. **Check current state**: read the generated types/schema (if any) to
+   understand the existing schema — don't assume
+3. **Create the migration**: generate the file in the project's migrations
+   folder, with a timestamp/version following the convention in use
+4. **Always include**:
+   - Active authorization (RLS or equivalent) for new tables
+   - Authorization rules for every relevant role/profile
+   - Constraints for critical fields (financial, mandatory)
+   - Indexes for fields used in frequent queries
+   - Explanatory comments in the SQL/DDL
+5. **Rollback**: create the matching rollback script
+6. **Update types**: regenerate the database's generated types, if the
+   project has them. Not optional — a table applied but not regenerated
+   into the types fails on the first query that uses it.
+7. **Record**: add a line to the migrations-state doc
+   (`docs/migrations-state.md` or equivalent) with state `to apply`
 
-## Validacoes obrigatorias
-- [ ] Autorizacao activa na tabela
-- [ ] Regras para todos os roles/perfis relevantes
-- [ ] Sem `CASCADE` em deletes de producao sem decisao explicita (preferir soft delete)
-- [ ] Constraints para campos financeiros (>= 0, NOT NULL conforme aplicavel)
-- [ ] Indices para foreign keys e campos de pesquisa
+## Mandatory validations
+- [ ] Authorization active on the table
+- [ ] Rules for every relevant role/profile
+- [ ] No `CASCADE` on production deletes without an explicit decision (prefer soft delete)
+- [ ] Constraints for financial fields (>= 0, NOT NULL as applicable)
+- [ ] Indexes for foreign keys and search fields
 
-## Como aplicar <!-- ADAPTAR: descrever o mecanismo real do projecto -->
+## How to apply <!-- ADAPT: describe the project's real mechanism -->
 
-Se o projecto nao tiver deploy automatico de schema, aplicar manualmente e
-registar a evidencia (output, data) no doc de estado de migracoes. **O passo
-que mais se esquece e o registo depois de aplicar** — sem ele, ninguem sabe
-o que esta realmente em producao vs. so no repositorio.
+If the project has no automated schema deploys, apply manually and record
+the evidence (output, date) in the migrations-state doc. **The step most
+often forgotten is recording after applying** — without it, nobody knows
+what is actually in production vs. only in the repository.
 
-⚠️ Se o motor de base de dados corre o script inteiro como uma transaccao,
-uma falha a meio faz rollback de tudo o que veio antes, mesmo parecendo ter
-corrido. Antes de criar regras de autorizacao novas, remover/substituir
-explicitamente qualquer versao anterior com o mesmo nome (evita "already
-exists" a abortar a transaccao inteira).
+⚠️ If the database engine runs the whole script as one transaction, a
+failure midway rolls back everything before it, even though it seemed to
+run. Before creating new authorization rules, explicitly drop/replace any
+earlier version with the same name (avoids an "already exists" aborting
+the entire transaction).

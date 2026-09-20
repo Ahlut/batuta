@@ -1,26 +1,25 @@
 # CLAUDE.md — {{PROJECT_NAME}}
 
-Le este ficheiro no inicio de cada sessao. E o indice do projeto — aponta
-para os docs detalhados em vez de duplicar informacao.
+Read this file at the start of every session. It is the project's index —
+it points to the detailed docs instead of duplicating information.
 
-> **Placeholders a preencher antes de usar este ficheiro** (procurar e
-> substituir todos):
+> **Placeholders to fill before using this file** (find and replace all):
 > `{{PROJECT_NAME}}` · `{{PRODUCT_SUMMARY}}` · `{{ROLES}}` · `{{ROUTES}}` ·
 > `{{STACK}}` · `{{CODE_CONVENTIONS}}` · `{{TEST_STACK}}` ·
 > `{{LINT_CMD}}` · `{{TEST_CMD}}` · `{{TYPECHECK_CMD}}` · `{{BUILD_CMD}}` ·
-> `{{DEV_CMD}}` · `{{BACKLOG_DOC}}` (a lista-única de pendentes do projecto).
-> Secções marcadas `<!-- ADAPTAR -->` pedem uma decisão, nao so um
-> preenchimento de texto — ler a nota antes de apagar ou manter.
+> `{{DEV_CMD}}` · `{{BACKLOG_DOC}}` (the project's single list of open items).
+> Sections marked `<!-- ADAPT -->` ask for a decision, not just text to
+> fill in — read the note before deleting or keeping them.
 
 ---
 
-## O Produto
+## The Product
 
 {{PRODUCT_SUMMARY}}
-Contexto completo: `docs/product-context.md` <!-- ADAPTAR: criar se nao existir; e o doc de produto/dominio, nao de processo -->
+Full context: `docs/product-context.md` <!-- ADAPT: create it if missing; it is the product/domain doc, not a process doc -->
 
-**Roles**: {{ROLES}} <!-- ADAPTAR: apagar esta linha e "Rotas" se o projecto nao tiver roles distintos -->
-**Rotas**: {{ROUTES}}
+**Roles**: {{ROLES}} <!-- ADAPT: delete this line and "Routes" if the project has no distinct roles -->
+**Routes**: {{ROUTES}}
 
 ---
 
@@ -29,424 +28,424 @@ Contexto completo: `docs/product-context.md` <!-- ADAPTAR: criar se nao existir;
 {{STACK}}
 
 <!--
-Exemplo ficticio (comentado como referencia de nivel de detalhe, nao como default):
+Fictional example (kept as a comment to calibrate the level of detail, not as a default):
 - Next.js (App Router) + TypeScript
 - Radix UI + CSS Modules
-- SWR para data fetching
+- SWR for data fetching
 - Prisma + PostgreSQL
-- NextAuth (JWT em cookie httpOnly)
-- Jest + Testing Library (testes unitarios)
+- NextAuth (JWT in an httpOnly cookie)
+- Jest + Testing Library (unit tests)
 -->
 
 ---
 
-## Convencoes de codigo
+## Code conventions
 
 {{CODE_CONVENTIONS}}
 
 <!--
-Categorias que valeu a pena separar no projecto de origem — adaptar, nao copiar:
-- Ficheiros e pastas (convencao de nomes, onde vive cada tipo de ficheiro)
-- Tipagem (ex.: "sem `any`", tipos de DB gerados vs escritos a mao)
-- Padroes da framework de UI (ex.: "logica em hooks, nao inline")
-- Padroes de data layer (ex.: "sempre .select() explicito, nunca select('*')")
-- Operacoes criticas (financeiras, irreversiveis) -> camada atomica no backend
-- UI primitivos de terceiros: nunca editar directamente; se uma excepcao for
-  necessaria, registar onde e porque (ficheiro + secçao + justificaçao), para
-  nao se repetir "sem querer" numa sessao futura.
+Categories that proved worth separating in the source project — adapt, don't copy:
+- Files and folders (naming convention, where each kind of file lives)
+- Typing (e.g. "no `any`", generated DB types vs hand-written)
+- UI framework patterns (e.g. "logic in hooks, never inline")
+- Data-layer patterns (e.g. "always an explicit .select(), never select('*')")
+- Critical operations (financial, irreversible) -> atomic layer in the backend
+- Third-party UI primitives: never edit directly; if an exception is
+  needed, record where and why (file + section + justification), so it
+  doesn't repeat itself "by accident" in a future session.
 -->
 
 ---
 
-## Seguranca
+## Security
 
-Checklist completa: `docs/security-checklist.md`
+Full checklist: `docs/security-checklist.md`
 
-Resumo: <!-- ADAPTAR: 1-3 linhas com os invariantes de seguranca do projecto
-(ex.: "RLS em tudo", "validacao frontend + backend", "sem segredos em vars
-publicas", "operacoes financeiras atomicas") -->
+Summary: <!-- ADAPT: 1-3 lines with the project's security invariants
+(e.g. "RLS on everything", "frontend + backend validation", "no secrets in
+public env vars", "atomic financial operations") -->
 
-Supply-chain (opcional — ver `ADOPTION.md` §7): se o projecto tiver um gate
-de cooldown de dependencias, descrever aqui a regra e apontar para o script.
-
----
-
-## Testes
-
-Convencoes completas: `docs/test-conventions.md`
-
-Resumo: {{TEST_STACK}}. Hook pre-push corre `{{LINT_CMD}}` + `{{TEST_CMD}}`
-automaticamente antes de cada push.
+Supply chain (optional — see `ADOPTION.md` §7): if the project has a
+dependency cooldown gate, describe the rule here and point to the script.
 
 ---
 
-## Areas duplicadas do projecto <!-- ADAPTAR -->
+## Tests
 
-Se o projecto tiver superficies quase-duplicadas (paginas por role, temas,
-clientes multiplos de uma mesma API) em vez de componentes/modulos
-partilhados, documentar aqui o mapa completo — nao uma amostra. A licao do
-projecto de origem: uma tabela com metade das linhas perde exactamente os
-casos onde os bugs aparecem, porque ninguem sabe que aquele espelho existe
-ate o esquecer.
+Full conventions: `docs/test-conventions.md`
 
-| Area | Espelho A | Espelho B | Espelho C |
-|------|-----------|-----------|-----------|
-| _(preencher, ou apagar a seccao se nao houver duplicacao)_ | | | |
-
-Se nao houver duplicacao estrutural no projecto, apagar esta seccao — nao
-manter vazia como placeholder permanente.
-
-Padrao a seguir quando a duplicacao existir: um componente/modulo unico
-montado nos espelhos, com a diferenca entre eles absorvida numa prop/parametro
-em vez de um `if (contexto === ...)` espalhado. Dedup incremental, nao
-reescrita completa de uma vez.
+Summary: {{TEST_STACK}}. The pre-push hook runs `{{LINT_CMD}}` +
+`{{TEST_CMD}}` automatically before every push.
 
 ---
 
-## Fluxo de desenvolvimento
+## Duplicated areas of the project <!-- ADAPT -->
 
-O principio base: **proporcionalidade ao risco**. Processo leve onde o custo
-de um erro e baixo; processo rigoroso onde o custo e alto. O pre-push hook
-(`{{LINT_CMD}}` + `{{TEST_CMD}}`) e a rede de seguranca base — corre sempre
-antes de qualquer push, independentemente do resto.
+If the project has near-duplicate surfaces (per-role pages, themes,
+multiple clients of the same API) instead of shared components/modules,
+document the complete map here — not a sample. The source project's lesson:
+a table with half the rows misses exactly the cases where the bugs appear,
+because nobody knows that mirror exists until they forget it.
+
+| Area | Mirror A | Mirror B | Mirror C |
+|------|----------|----------|----------|
+| _(fill in, or delete the section if there is no duplication)_ | | | |
+
+If the project has no structural duplication, delete this section — don't
+keep it empty as a permanent placeholder.
+
+Pattern to follow when duplication exists: a single component/module
+mounted in the mirrors, with the difference between them absorbed into a
+prop/parameter instead of an `if (context === ...)` scattered around.
+Incremental dedup, not a full rewrite in one go.
+
+---
+
+## Development flow
+
+The base principle: **proportionality to risk**. Light process where a
+mistake is cheap; rigorous process where it is expensive. The pre-push hook
+(`{{LINT_CMD}}` + `{{TEST_CMD}}`) is the base safety net — it always runs
+before any push, regardless of everything else.
 
 ```
-0. Antes de qualquer Edit/Write em codigo que vai para git, declarar ao utilizador:
-   "TIER: X. Agentes: Y. Local test: sim/nao."
-   Esta linha e o gate — sem ela, nao escrever codigo. Aplica-se a CADA bloco
-   de mudancas (nao uma vez por sessao). O utilizador pode fazer push-back
-   imediato se o tier estiver errado.
-   Este passo e IMPOSTO pelo harness, nao so pedido: o hook PreToolUse
-   `check-tier-declared` (ver "Hooks automaticos") bloqueia Edit/Write em
-   ficheiros de codigo sem um MARCADOR DE BLOCO valido. Ao declarar o tier,
-   escrever tambem o marcador (visivel no terminal):
-     echo "TIER: X. Agentes: Y. Local test: sim/nao." > .claude/tier-block
-   O marcador expira no commit (bloco novo = redeclarar + reescrever).
-1. Perceber o pedido -> confirmar se ambiguo
-2. Ler codigo existente antes de escrever (nunca assumir)
-   2a. <!-- ADAPTAR: regra "nunca inventar acesso a superficie gerida por
-       terceiros" — ex.: antes de escrever queries que tocam tabelas geridas
-       pelo provider de auth, grep no directorio de migracoes por padrao
-       similar; nunca inventar um acesso directo a uma tabela de sistema
-       desse provider. Trocar pelo equivalente do stack real. -->
-2.5 Se tier SECURITY/SCHEMA e ha um erro reportado: capturar o codigo/mensagem
-    exactos ANTES de patchar (substituir toast/log generico por erro completo,
-    reproduzir, copiar output) — evita patch para hipotese errada
-3. Classificar o tier (ver tabela abaixo)
-4. Se tier SCHEMA ou FEATURE -> correr Architect (ver mecanismo abaixo)
-5. Implementar
-5.5 Se a mudanca toca um ficheiro do mapa de areas duplicadas: verificar
-    TODOS os espelhos da linha antes do commit - a mudanca aplica-se la? Se
-    sim, aplicar; se nao, declarar explicitamente porque no resumo.
-    (Apagar este passo se a seccao "Areas duplicadas" nao existir no projecto.)
-6. Se tier LOGIC, SECURITY, DATA-MIGRATION, SCHEMA ou FEATURE -> correr QA
-   (escrever testes)
-6.5 Para tiers LOGIC+ que alteram UI ou fluxo de utilizador: verificacao de
-    comportamento antes do commit - correr a app (`{{DEV_CMD}}`) e percorrer
-    o fluxo alterado. Testes unitarios nao substituem este passo. Ambito
-    deliberadamente leve: so o fluxo alterado, nao regressao completa.
-    ("Local test: sim/nao" no preambulo TIER passa a significar isto
-    explicitamente.)
-7. Se tier SECURITY, DATA-MIGRATION, SCHEMA ou FEATURE -> correr Security
-   (ver mecanismo abaixo)
-8. Commit -> rapido (sem hook). Antes de git commit, reler o preambulo TIER
-   declarado no passo 0 deste bloco — os agentes prometidos correram? Se nao,
-   parar e correr agora.
-   Correr `{{TYPECHECK_CMD}}` se o projecto for tipado. Exigir **zero** — erro
-   novo e regressao a corrigir, NUNCA a mascarar com casts/any/ts-ignore.
-   <!-- ADAPTAR: declarar aqui se o typecheck e ou nao gate automatico (pre-push/CI).
-   Se nao for, dizer explicitamente que e disciplina manual — nao presumir. -->
-9. Push -> pre-push corre `{{LINT_CMD}}` + `{{TEST_CMD}}` automaticamente. Se
-   falhar, push e bloqueado.
+0. Before any Edit/Write on code that goes to git, declare to the user:
+   "TIER: X. Agents: Y. Local test: yes/no."
+   That line is the gate — without it, write no code. It applies to EACH
+   block of changes (not once per session). The user can push back
+   immediately if the tier is wrong.
+   This step is ENFORCED by the harness, not just requested: the PreToolUse
+   hook `check-tier-declared` (see "Automatic hooks") blocks Edit/Write on
+   code files without a valid BLOCK MARKER. When declaring the tier, also
+   write the marker (visible in the terminal):
+     echo "TIER: X. Agents: Y. Local test: yes/no." > .claude/tier-block
+   The marker expires at commit (new block = redeclare + rewrite it).
+1. Understand the request -> confirm if ambiguous
+2. Read existing code before writing (never assume)
+   2a. <!-- ADAPT: the "never invent access to a third-party-managed
+       surface" rule — e.g. before writing queries that touch tables
+       managed by the auth provider, grep the migrations directory for a
+       similar pattern; never invent direct access to that provider's
+       system tables. Swap for the real stack's equivalent. -->
+2.5 If tier SECURITY/SCHEMA and there is a reported error: capture the
+    exact code/message BEFORE patching (replace generic toast/log with the
+    full error, reproduce, copy the output) — prevents patching the wrong
+    hypothesis
+3. Classify the tier (see table below)
+4. If tier SCHEMA or FEATURE -> run Architect (see mechanism below)
+5. Implement
+5.5 If the change touches a file in the duplicated-areas map: check ALL
+    the row's mirrors before the commit - does the change apply there? If
+    yes, apply it; if not, state explicitly why in the summary.
+    (Delete this step if the "Duplicated areas" section doesn't exist in
+    the project.)
+6. If tier LOGIC, SECURITY, DATA-MIGRATION, SCHEMA or FEATURE -> run QA
+   (write tests)
+6.5 For LOGIC+ tiers that change UI or a user flow: behavior check before
+    the commit - run the app (`{{DEV_CMD}}`) and walk the changed flow.
+    Unit tests do not replace this step. Deliberately light scope: only
+    the changed flow, not full regression.
+    ("Local test: yes/no" in the TIER preamble now means exactly this.)
+7. If tier SECURITY, DATA-MIGRATION, SCHEMA or FEATURE -> run Security
+   (see mechanism below)
+8. Commit -> fast (no hook). Before git commit, re-read the TIER preamble
+   declared in step 0 of this block — did the promised agents run? If not,
+   stop and run them now.
+   Run `{{TYPECHECK_CMD}}` if the project is typed. Require **zero** — a
+   new error is a regression to fix, NEVER to mask with casts/any/ts-ignore.
+   <!-- ADAPT: state here whether typecheck is an automatic gate
+   (pre-push/CI). If it is not, say explicitly that it is manual
+   discipline — don't let it be presumed. -->
+9. Push -> pre-push runs `{{LINT_CMD}}` + `{{TEST_CMD}}` automatically. If
+   it fails, the push is blocked.
 ```
 
-### Tiers de mudanca
+### Change tiers
 
-| Tier | O que e | Architect | QA | Security | Modelo |
-|------|---------|-----------|-----|---------|--------|
-| **NON-CODE** | Analise de doc, leitura, plano, brainstorm, perguntas, resumos | — | — | — | — |
-| **DISPLAY** | Adicionar campos a queries de leitura, UI copy, estilos, formatacao | — | — | — | — |
-| **DEPS** | Bump de dependencia patch/minor que passa o gate de cooldown (se existir) | — | — | — | — |
-| **LOGIC** | Nova mutacao, novo componente com estado, novo hook, novo util | — | Sim | — | Sonnet |
-| **SECURITY** | Regra de autorizacao (RLS/policy/guard), funcao com privilegios elevados, auth, pagamentos/subscricoes | — | Sim | Sim | Opus + Sonnet |
-| **DATA-MIGRATION** | UPDATE/backfill de dados sem alteracao de schema | — | Sim | Sim | Opus + Sonnet |
-| **SCHEMA** | Nova tabela, coluna, index, FK, migracao | Sim | Sim | Sim | Opus + Sonnet |
-| **FEATURE** | Feature nova que atravessa camadas (schema + autorizacao + UI) | Sim | Sim | Sim | Opus + Sonnet |
+| Tier | What it is | Architect | QA | Security | Model |
+|------|-----------|-----------|-----|---------|-------|
+| **NON-CODE** | Doc analysis, reading, planning, brainstorming, questions, summaries | — | — | — | — |
+| **DISPLAY** | Adding fields to read queries, UI copy, styles, formatting | — | — | — | — |
+| **DEPS** | Patch/minor dependency bump that passes the cooldown gate (if any) | — | — | — | — |
+| **LOGIC** | New mutation, new stateful component, new hook, new util | — | Yes | — | Sonnet |
+| **SECURITY** | Authorization rule (RLS/policy/guard), privileged function, auth, payments/subscriptions | — | Yes | Yes | Opus + Sonnet |
+| **DATA-MIGRATION** | Data UPDATE/backfill with no schema change | — | Yes | Yes | Opus + Sonnet |
+| **SCHEMA** | New table, column, index, FK, migration | Yes | Yes | Yes | Opus + Sonnet |
+| **FEATURE** | New feature crossing layers (schema + authorization + UI) | Yes | Yes | Yes | Opus + Sonnet |
 
-_Modelo: Opus → Architect e Security. Sonnet → QA, Frontend, Backend. Usar
-sempre alias (`opus`/`sonnet`), nunca IDs fixos de modelo — aliases
-acompanham a versao mais recente da familia automaticamente._
+_Model: Opus → Architect and Security. Sonnet → QA, Frontend, Backend.
+Always use the alias (`opus`/`sonnet`), never pinned model IDs — aliases
+track the newest version of the family automatically._
 
-<!-- ADAPTAR: se o projecto nao tiver base de dados propria, nao tiver
-pagamentos, ou nao tiver conceito de "schema", retirar/fundir os tiers que
-nao se aplicam (ver ADOPTION.md §1 para o racional de cada tier). Nao deixar
-tiers mortos na tabela so porque vieram do template — cada linha morta e uma
-pergunta que alguem vai fazer sem resposta. -->
+<!-- ADAPT: if the project has no database of its own, no payments, or no
+concept of "schema", remove/merge the tiers that don't apply (see
+ADOPTION.md §1 for each tier's rationale). Don't leave dead tiers in the
+table just because they came with the template — every dead row is a
+question someone will ask with no answer. -->
 
-**Tarefas NON-CODE nao invocam agentes.** Architect/QA/Security existem para
-mudancas que vao para git. Analisar um documento, ler codigo, fazer um plano
-ou responder a uma pergunta nao precisa de agentes.
+**NON-CODE tasks invoke no agents.** Architect/QA/Security exist for
+changes that go to git. Analyzing a document, reading code, making a plan
+or answering a question needs no agents.
 
-**Regra de tie-break:**
-- Em duvida entre LOGIC e SECURITY/SCHEMA → subir.
-- Em duvida entre DISPLAY e LOGIC → manter LOGIC.
-- FEATURE so se a mudanca atravessa REALMENTE schema + autorizacao + UI numa
-  so unidade de trabalho.
+**Tie-break rules:**
+- In doubt between LOGIC and SECURITY/SCHEMA → go up.
+- In doubt between DISPLAY and LOGIC → keep LOGIC.
+- FEATURE only if the change REALLY crosses schema + authorization + UI in
+  a single unit of work.
 
-**Antes de invocar um agente, pergunta-chave:** *Esta mudanca vai para git?*
-Se nao → sem agente. Se sim → qual o tier minimo justificavel?
+**Before invoking an agent, the key question:** *Does this change go to
+git?* If not → no agent. If yes → what is the minimum justifiable tier?
 
-**Tier DEPS — bumps de dependencias.** Um bump de dependencia tem uma cadeia
-de seguranca propria e automatica: gate de cooldown (se existir) + audit de
-vulnerabilidades + pre-push (lint+test) + build no CI. Para um patch/minor
-que passa esse gate, esses controlos SAO o processo de seguranca — nao se
-invoca Architect/QA/Security (um Security agent revê diffs de codigo; num
-diff de lockfile nao tem nada para analisar). Verificacao obrigatoria: correr
-a suite e confirmar que a app arranca. **Escalar para SECURITY** se: bump
-**major/breaking**, OU bump de uma lib de **auth/cripto/pagamentos**, OU o
-bump exigir furar o cooldown/allowlist — ai o Security agent revê changelog +
-breaking changes + transitivos novos.
+**DEPS tier — dependency bumps.** A dependency bump has its own automatic
+security chain: cooldown gate (if any) + vulnerability audit + pre-push
+(lint+test) + the CI build. For a patch/minor that passes that gate, those
+controls ARE the security process — don't invoke Architect/QA/Security (a
+Security agent reviews code diffs; in a lockfile diff there is nothing for
+it to analyze). Mandatory check: run the suite and confirm the app starts.
+**Escalate to SECURITY** if: a **major/breaking** bump, OR a bump of an
+**auth/crypto/payments** lib, OR the bump requires piercing the
+cooldown/allowlist — then the Security agent reviews the changelog +
+breaking changes + new transitives.
 
-**"avanca rapido" nao muda o tier.** Muda a velocidade de implementacao, nao
-o processo.
+**"Move fast" does not change the tier.** It changes implementation speed,
+not the process.
 
-**Custo de tokens — overlay de orcamento (obrigatorio ler
-`docs/custo-tokens.md`).** O fan-out de agentes deste fluxo e caro quando
-usado a full em todas as mudancas. Regras resumidas (R1-R7 completas no
-doc): 1 agente de reconhecimento, nao varios em paralelo + Plan; modelo caro
-(Opus) SO para Architect/Security; verificar UMA vez (agente OU
-orquestrador, nunca os dois); higiene de contexto entre blocos de trabalho
-(guardar a conclusao, nao o relatorio inteiro); lane leve para tiers
-LOGIC/aditivos; o fan-out COMPLETO reserva-se para FEATURE multi-camada com
-superficie de ataque real — escala com o RISCO, nao com o habito.
+**Token cost — the budget overlay (reading `docs/token-costs.md` is
+mandatory).** This flow's agent fan-out is expensive when used at full
+strength on every change. Summary rules (full R1-R7 in the doc): 1 recon
+agent, not several in parallel + a Plan; the expensive model (Opus) ONLY
+for Architect/Security; verify ONCE (agent OR orchestrator, never both);
+context hygiene between work blocks (keep the conclusion, not the whole
+report); a light lane for LOGIC/additive tiers; the FULL fan-out is
+reserved for multi-layer FEATURE work with a real attack surface — it
+scales with RISK, not with habit.
 
-**Regra anti-skip (aprendida em incidente real):** Em sessoes longas com
-muitas fases, a tendencia e tratar os agentes como overhead e "avançar".
-Isto e errado. Antes de escrever qualquer codigo de tier >= LOGIC, para e
-verifica: *"Ja corri os agentes obrigatorios para este tier?"* Se nao →
-corre antes de escrever. Implementar e depois pedir review ao Security nao e
-o mesmo que Security antes de implementar — o Security pode encontrar
-problemas que mudam o design, nao so o codigo.
+**Anti-skip rule (learned in a real incident):** in long sessions with
+many phases, the temptation is to treat agents as overhead and "push on".
+That is wrong. Before writing any code of tier >= LOGIC, stop and check:
+*"Have I run the mandatory agents for this tier?"* If not → run them
+before writing. Implementing and then asking Security for a review is not
+the same as Security before implementing — Security can find problems that
+change the design, not just the code.
 
 ---
 
-## Agentes
+## Agents
 
-| Agente | Tipo | Quando invocar | Ficheiro de contexto |
-|--------|------|---------------|---------------------|
-| Architect | Horizontal | Tier SCHEMA ou FEATURE | `.claude/agents/architect.md` |
-| Security | Horizontal | Tier SECURITY, DATA-MIGRATION, SCHEMA ou FEATURE | `.claude/agents/security.md` |
-| QA | Horizontal | Tier LOGIC, SECURITY, DATA-MIGRATION, SCHEMA ou FEATURE | `.claude/agents/qa.md` |
-| Product | Horizontal | Tier FEATURE — decisoes UX/PM (rotas, fluxos, separacao de conceitos) | `.claude/agents/product.md` |
-| Frontend | Vertical | Componentes, paginas, hooks, UX | `.claude/agents/frontend.md` |
-| Backend | Vertical | Base de dados, autorizacao, funcoes/servicos de backend | `.claude/agents/backend.md` |
+| Agent | Type | When to invoke | Context file |
+|-------|------|---------------|--------------|
+| Architect | Horizontal | Tier SCHEMA or FEATURE | `.claude/agents/architect.md` |
+| Security | Horizontal | Tier SECURITY, DATA-MIGRATION, SCHEMA or FEATURE | `.claude/agents/security.md` |
+| QA | Horizontal | Tier LOGIC, SECURITY, DATA-MIGRATION, SCHEMA or FEATURE | `.claude/agents/qa.md` |
+| Product | Horizontal | Tier FEATURE — UX/PM decisions (routes, flows, separation of concepts) | `.claude/agents/product.md` |
+| Frontend | Vertical | Components, pages, hooks, UX | `.claude/agents/frontend.md` |
+| Backend | Vertical | Database, authorization, backend functions/services | `.claude/agents/backend.md` |
 
-**Horizontais** = transversais, aplicam-se a qualquer area.
-**Verticais** = especialistas numa camada tecnica.
+**Horizontal** = cross-cutting, apply to any area.
+**Vertical** = specialists in one technical layer.
 
-Os ficheiros de agente sao **genericos por desenho**: o contexto especifico
-do projecto (stack, modelo de auth, principios de UX, arvore de pastas) vive
-NESTE ficheiro e nos docs que ele indica — cada agente comeca por le-los. E
-por isso que a via plugin (ficheiros read-only partilhados) e a via
-copy-paste dao o mesmo resultado; enriquecer um agente = enriquecer o
-CLAUDE.md, nao editar o ficheiro do agente.
+The agent files are **generic by design**: the project-specific context
+(stack, auth model, UX principles, folder tree) lives in THIS file and the
+docs it points to — every agent starts by reading them. That is why the
+plugin path (shared read-only files) and the copy-paste path produce the
+same result; enriching an agent = enriching CLAUDE.md, not editing the
+agent file.
 
-<!-- ADAPTAR: se o projecto nao tiver frontend/backend como camadas
-separadas (ex.: uma CLI, uma lib), reduzir os verticais ao que existir de
-facto — nao manter agentes sem area. -->
+<!-- ADAPT: if the project doesn't have frontend/backend as separate
+layers (e.g. a CLI, a lib), reduce the verticals to what actually exists —
+don't keep agents without an area. -->
 
-### Mecanismo de invocacao (OBRIGATORIO seguir)
+### Invocation mechanism (MANDATORY to follow)
 
-O harness (Claude Code) carrega os ficheiros de `.claude/agents/*.md`
-automaticamente: cada um torna-se um tipo de subagente nomeado, com o papel
-definido pelo corpo do ficheiro e o `description` do frontmatter a guiar a
-delegacao. Invocar o agente **pelo nome** (`subagent_type: "security"`, etc.)
-— NAO copiar o conteudo do ficheiro para o prompt; isso era o mecanismo
-antigo e duplica instrucoes que o harness ja aplicou. No prompt da invocacao
-vai so o que o ficheiro nao tem: o codigo/contexto da tarefa concreta e o
-ambito do que se quer analisado ou produzido.
+The harness (Claude Code) loads the files in `.claude/agents/*.md`
+automatically: each one becomes a named subagent type, with the role
+defined by the file body and the frontmatter `description` guiding
+delegation. Invoke the agent **by name** (`subagent_type: "security"`,
+etc.) — do NOT copy the file's content into the prompt; that was the old
+mechanism and it duplicates instructions the harness already applied. The
+invocation prompt carries only what the file doesn't have: the concrete
+task's code/context and the scope of what you want analyzed or produced.
 
-Confirmar que o tipo aparece na lista de agentes da sessao antes de assumir
-que carregou: um frontmatter com YAML invalido — o caso classico e `: `
-(dois pontos + espaco) dentro de um `description` sem aspas — faz o agente
-ser ignorado EM SILENCIO. Descriptions com `:` vao sempre entre aspas; a
-licao custou meses de agentes "instalados" que nunca carregaram no projecto
-de origem.
+Confirm the type shows up in the session's agent list before assuming it
+loaded: a frontmatter with invalid YAML — the classic case is `: ` (colon
++ space) inside an unquoted `description` — makes the agent be ignored
+SILENTLY. Descriptions containing `:` always go in quotes; that lesson
+cost months of "installed" agents that never loaded in the source project.
 
-**Modelo por agente**: definido no frontmatter de cada ficheiro (`model:`),
-aplicado automaticamente pelo harness (ver coluna "Modelo" na tabela de tiers):
-- `model: opus` → Architect, Security, Product (decisoes criticas, analise de seguranca)
-- `model: sonnet` → QA, Frontend, Backend (implementacao, testes, codigo mecanico)
-- Usar sempre o alias (`opus`, `sonnet`), nunca o ID fixo — o alias
-  acompanha automaticamente a versao mais recente da familia.
+**Model per agent**: set in each file's frontmatter (`model:`), applied
+automatically by the harness (see the "Model" column in the tier table):
+- `model: opus` → Architect, Security, Product (critical decisions, security analysis)
+- `model: sonnet` → QA, Frontend, Backend (implementation, tests, mechanical code)
+- Always use the alias (`opus`, `sonnet`), never a pinned ID — the alias
+  tracks the newest version of the family automatically.
 
-**Ferramentas por agente**: os revisores nao escrevem. `security` e
-`architect` tem `tools: Read, Grep, Glob, Bash` no frontmatter; `product`
-tem `Read, Grep, Glob`. Um revisor adversarial que consegue alterar o codigo
-que esta a rever deixa de ser adversarial — devolve o achado/spec, e o
-orquestrador aplica. (Nota honesta: `Bash` fica, porque a revisao precisa de
-`git diff` e de correr verificacoes — o que tecnicamente ainda permite
-escrever via shell. A restricao e friccao deliberada e sinal de papel, nao
-uma sandbox.) QA, Frontend e Backend mantem escrita — implementar e o papel
-deles.
+**Tools per agent**: reviewers don't write. `security` and `architect`
+have `tools: Read, Grep, Glob, Bash` in the frontmatter; `product` has
+`Read, Grep, Glob`. An adversarial reviewer that can modify the code it is
+reviewing stops being adversarial — it returns the finding/spec, and the
+orchestrator applies it. (Honest note: `Bash` stays, because review needs
+`git diff` and running checks — which technically still allows writing via
+shell. The restriction is deliberate friction and a role signal, not a
+sandbox.) QA, Frontend and Backend keep write access — implementing is
+their job.
 
-**Thread principal:** modelo mais barato para sessoes exploratórias ou
-DISPLAY/LOGIC leve; modelo mais caro quando se implementa directamente nos
-tiers SECURITY/SCHEMA/FEATURE sem delegar a agentes.
+**Main thread:** the cheaper model for exploratory sessions or light
+DISPLAY/LOGIC; the expensive model when implementing directly in
+SECURITY/SCHEMA/FEATURE tiers without delegating to agents.
 
-**Regra critica:** Architect e Security correm ANTES de implementar/commitar.
-QA corre DEPOIS de implementar (escreve os testes). Security e QA podem
-correr em paralelo quando o codigo ja existe.
+**Critical rule:** Architect and Security run BEFORE implementing/
+committing. QA runs AFTER implementing (it writes the tests). Security and
+QA can run in parallel once the code exists.
 
-**Nao e opcional.** Se o tier exige o agente, o agente tem de correr. Um
-plano existente nao substitui o Architect — o plano e o input do Architect,
-nao o output.
+**Not optional.** If the tier requires the agent, the agent must run. An
+existing plan does not replace the Architect — the plan is the Architect's
+input, not its output.
 
-### Specs persistentes (tier SCHEMA/FEATURE)
+### Persistent specs (SCHEMA/FEATURE tiers)
 
-Em tiers **SCHEMA/FEATURE**, o output do Architect nao fica so na conversa:
-o agente devolve a spec completa (e read-only — ver "Ferramentas por
-agente") e o orquestrador escreve-a em `docs/specs/YYYY-MM-DD-<feature>.md`
-(decisoes, schema, contratos, criterios de aceitacao) e comita-a **antes**
-da implementacao. A
-spec e o contrato — a implementacao referencia-a e o QA valida em 2 niveis:
-conformidade com a spec primeiro, qualidade do codigo depois (nao so contra o
-codigo).
+In **SCHEMA/FEATURE** tiers, the Architect's output does not stay in the
+conversation: the agent returns the complete spec (it is read-only — see
+"Tools per agent") and the orchestrator writes it to
+`docs/specs/YYYY-MM-DD-<feature>.md` (decisions, schema, contracts,
+acceptance criteria) and commits it **before** implementation. The spec is
+the contract — the implementation references it and QA validates on 2
+levels: conformance to the spec first, code quality second (not against
+the code alone).
 
-### TDD cirurgico para bugfixes (tier LOGIC+)
+### Surgical TDD for bugfixes (LOGIC+ tiers)
 
-Extensao da regra 2.5: para qualquer bug reportado de tier **LOGIC ou
-superior**, a reproducao materializa-se num **teste que falha** antes do fix
-(quando testavel na suite; senao, documentar a reproducao manual no commit).
-O fix so esta completo quando o teste passa. Nao e TDD universal — so
-bugfixes, onde o racional local (fixes sem teste de regressao encontrados em
-auditoria) justifica o custo.
+Extension of rule 2.5: for any reported bug of tier **LOGIC or higher**,
+the reproduction materializes as a **failing test** before the fix (when
+testable in the suite; otherwise, document the manual reproduction in the
+commit). The fix is only complete when the test passes. This is not
+universal TDD — bugfixes only, where the local rationale (fixes with no
+regression test found in audit) justifies the cost.
 
-### Rotinas
+### Routines
 
-Padrao para manutencao recorrente: usar um scheduler/cron do harness para
-checks periodicos (deps bloqueadas no cooldown, pulse de seguranca). Manter
-minimo — hooks e rotinas so em gates criticos, nao em tudo.
+Pattern for recurring maintenance: use the harness's scheduler/cron for
+periodic checks (deps blocked in the cooldown, security pulse). Keep it
+minimal — hooks and routines only on critical gates, not on everything.
 
-**Checklist de desenho de loops** (aplicar a qualquer automatismo novo —
-hook, rotina, cron, workflow autonomo). Antes de o criar, declarar as 4
-pecas:
+**Loop design checklist** (apply to any new automation — hook, routine,
+cron, autonomous workflow). Before creating it, declare the 4 pieces:
 
-1. **Trigger** — o que dispara (push, cron, evento)
-2. **Topologia** — que comando(s)/agente(s) corre e em que ordem
-3. **Verificador** — o que valida o resultado (testes, lint, build, agente review)
-4. **Stop rule** — quando para (sucesso, N iteracoes, orcamento de tokens)
+1. **Trigger** — what fires it (push, cron, event)
+2. **Topology** — which command(s)/agent(s) it runs, and in what order
+3. **Verifier** — what validates the result (tests, lint, build, review agent)
+4. **Stop rule** — when it stops (success, N iterations, token budget)
 
-Sem verificador e stop rule explicitos, o loop nao se cria. Os gates
-existentes (pre-push, CI→deploy, rotina do cooldown) ja seguem este padrao.
-Loops autonomos que escrevem codigo sem supervisao (estilo "ship while you
-sleep") estao fora da framework: conflituam com o gate de tiers, com push
-directo para a branch principal e com a disciplina de custo de tokens.
+Without an explicit verifier and stop rule, the loop doesn't get created.
+The existing gates (pre-push, CI→deploy, the cooldown routine) already
+follow this pattern. Autonomous loops that write code unsupervised
+("ship while you sleep" style) are outside the framework: they conflict
+with the tier gate, with direct pushes to the main branch, and with the
+token-cost discipline.
 
 ---
 
 ## Skills
 
-| Skill | Como usar | O que faz |
-|-------|----------|-----------|
-| `/security-check` | `/security-check` | Analisa seguranca da area modificada (Security agent + git diff) |
-| `/db-migration` | `/db-migration descricao` | Cria e valida migracao de schema, e regista-a no doc de estado de migracoes |
+| Skill | Usage | What it does |
+|-------|-------|--------------|
+| `/security-check` | `/security-check` | Security analysis of the modified area (Security agent + git diff) |
+| `/db-migration` | `/db-migration description` | Creates and validates a schema migration, and records it in the migrations-state doc |
 
-<!-- ADAPTAR: `security-baseline` (auditoria completa do codebase) e
-`security-status` (pulse rapido sem agentes) existem no projecto de origem e
-seguem o mesmo padrao de frontmatter — replicar quando o projecto crescer o
-suficiente para justificar. Nao copiar so porque existiam la; cada skill
-nova e mais um ficheiro para manter em sincronia com o fluxo. -->
+<!-- ADAPT: `security-baseline` (full codebase audit) and `security-status`
+(quick pulse, no agents) exist in the source project and follow the same
+frontmatter pattern — replicate them when the project grows enough to
+justify it. Don't copy them just because they existed there; every new
+skill is one more file to keep in sync with the flow. -->
 
-Skills vivem em `.claude/skills/<nome>/SKILL.md` com frontmatter (`name`,
-`description`); agentes em `.claude/agents/<nome>.md`, tambem com
-frontmatter incluindo `model`. Confirmar que o harness em uso carrega
-skills desta pasta antes de assumir que `/nome` corre alguma coisa — um
-ficheiro `.md` solto fora da estrutura esperada nao e descoberto
-silenciosamente.
-
----
-
-## Hooks automaticos
-
-| Hook | Evento | Accao |
-|------|--------|-------|
-| Pre-push | Antes de `git push` | Corre `{{LINT_CMD}}` + `{{TEST_CMD}}` — bloqueia se falhar |
-| check-tier-declared | PreToolUse em Edit\|Write (harness) | Bloqueia edicao de codigo sem declaracao "TIER:" desde o ultimo commit — o passo 0 deixa de ser so prosa |
-
-Config do pre-push: `scripts/pre-push` (instalado via install script — ver
-`hooks/README.md` no template). Config do gate de tier:
-`.claude/hooks/check-tier-declared.cjs` + entrada PreToolUse em
-`.claude/settings.json` (ver `hooks/README.md`). <!-- ADAPTAR: acrescentar
-aqui outros hooks do harness que o projecto vier a usar (ex.: SessionStart
-informativo) -->
+Skills live in `.claude/skills/<name>/SKILL.md` with frontmatter (`name`,
+`description`); agents in `.claude/agents/<name>.md`, also with
+frontmatter including `model`. Confirm the harness in use loads skills
+from this folder before assuming `/name` runs anything — a loose `.md`
+file outside the expected structure is not discovered, silently.
 
 ---
 
-## Fluxo de deploy (automatico) <!-- ADAPTAR -->
+## Automatic hooks
 
-Descrever aqui, sem overclaim, o que realmente acontece do commit a
-producao. O erro mais caro do projecto de origem foi um doc a alegar "3
-barreiras" que na pratica eram 2 — declarar sempre **o que bloqueia** e **o
-que nao bloqueia**, explicitamente, e corrigir esta seccao no dia em que o
-pipeline mudar (nao deixar ficar stale).
+| Hook | Event | Action |
+|------|-------|--------|
+| Pre-push | Before `git push` | Runs `{{LINT_CMD}}` + `{{TEST_CMD}}` — blocks on failure |
+| check-tier-declared | PreToolUse on Edit\|Write (harness) | Blocks code edits without a "TIER:" declaration since the last commit — step 0 stops being just prose |
+
+Pre-push config: `scripts/pre-push` (installed via the install script —
+see `hooks/README.md` in the template). Tier-gate config:
+`.claude/hooks/check-tier-declared.cjs` + a PreToolUse entry in
+`.claude/settings.json` (see `hooks/README.md`). <!-- ADAPT: add here any
+other harness hooks the project comes to use (e.g. an informational
+SessionStart) -->
+
+---
+
+## Deploy flow (automatic) <!-- ADAPT -->
+
+Describe here, without overclaiming, what really happens from commit to
+production. The source project's most expensive mistake was a doc claiming
+"3 barriers" when in practice there were 2 — always state **what blocks**
+and **what does not block**, explicitly, and fix this section the day the
+pipeline changes (don't let it go stale).
 
 ```
-git commit  →  (instantaneo, sem hook)
+git commit  →  (instant, no hook)
 git push    →  pre-push hook:   {{LINT_CMD}} + {{TEST_CMD}}
-            →  CI:              <!-- descrever os jobs reais -->
+            →  CI:              <!-- describe the real jobs -->
 ```
 
-### O que realmente bloqueia (e o que nao)
+### What actually blocks (and what doesn't)
 
-**Bloqueia mesmo:** <!-- listar: pre-push, gates de CI que realmente falham o job -->
+**Actually blocks:** <!-- list: pre-push, CI gates that really fail the job -->
 
-**NAO bloqueia:** <!-- listar deliberadamente: typecheck se nao for gate,
-E2E se o deploy nao depender dele, review de code owners se o fluxo for push
-directo sem PR, audit de dependencias/gate de supply-chain se nao existirem
-(ver ADOPTION.md §7 — a ausencia declara-se, nao se omite), etc. Uma lista
-vazia aqui e suspeita — quase nenhum pipeline bloqueia tudo. -->
+**Does NOT block:** <!-- list deliberately: typecheck if it isn't a gate,
+E2E if the deploy doesn't depend on it, code-owner review if the flow is
+direct pushes without PRs, dependency audit / supply-chain gate if they
+don't exist (see ADOPTION.md §7 — absence gets declared, not omitted),
+etc. An empty list here is suspicious — almost no pipeline blocks on
+everything. -->
 
 ### Code review
 
-<!-- ADAPTAR: quando corre o Security agent (durante o desenvolvimento nos
-tiers que o exigem) vs. o que a CI cobre automaticamente vs. se ha gate
-manual adicional (PR review humano). -->
+<!-- ADAPT: when the Security agent runs (during development in the tiers
+that require it) vs. what CI covers automatically vs. whether there is an
+additional manual gate (human PR review). -->
 
 ---
 
-## Documentacao de referencia
+## Reference documentation
 
-| Doc | Conteudo |
-|-----|---------|
-| `docs/product-context.md` | Produto, dominio, fluxos <!-- ADAPTAR: nome real do doc de dominio --> |
-| `{{BACKLOG_DOC}}` | **A única lista que conta** — tudo o que está aberto; item novo entra AQUI |
-| `docs/security-checklist.md` | Checklist de seguranca (fonte unica) |
-| `docs/test-conventions.md` | Convencoes de teste (fonte unica) |
-| `docs/custo-tokens.md` | Regras de contencao de custo de agentes (R1-R7) |
+| Doc | Contents |
+|-----|----------|
+| `docs/product-context.md` | Product, domain, flows <!-- ADAPT: the domain doc's real name --> |
+| `{{BACKLOG_DOC}}` | **The only list that counts** — everything open; new items go HERE |
+| `docs/security-checklist.md` | Security checklist (single source) |
+| `docs/test-conventions.md` | Test conventions (single source) |
+| `docs/token-costs.md` | Agent cost containment rules (R1-R7) |
 
-<!-- ADAPTAR: acrescentar aqui outros docs de fonte unica que o projecto for
-criando (design system, manual de orquestracao, etc.) — o principio e um
-unico doc por topico, CLAUDE.md aponta em vez de duplicar. -->
+<!-- ADAPT: add here other single-source docs the project creates (design
+system, orchestration manual, etc.) — the principle is one doc per topic,
+with CLAUDE.md pointing instead of duplicating. -->
 
 ---
 
-## Variaveis de ambiente
+## Environment variables
 
 ```
-<!-- ADAPTAR: listar as vars reais e se sao publicas/secretas -->
+<!-- ADAPT: list the real vars and whether they are public/secret -->
 ```
 
-Ficheiro: `.env.local` (ou equivalente, no .gitignore, nunca commitar)
+File: `.env.local` (or equivalent, in .gitignore, never committed)
 
 ---
 
-## Comandos uteis
+## Useful commands
 
 ```bash
-{{DEV_CMD}}          # servidor de desenvolvimento
-{{TEST_CMD}}         # testes
+{{DEV_CMD}}          # development server
+{{TEST_CMD}}         # tests
 {{LINT_CMD}}         # lint
-{{BUILD_CMD}}        # build de producao
-{{TYPECHECK_CMD}}    # verificacao de tipos (se aplicavel)
+{{BUILD_CMD}}        # production build
+{{TYPECHECK_CMD}}    # type checking (if applicable)
 ```

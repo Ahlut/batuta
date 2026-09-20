@@ -3,7 +3,7 @@
 // Runs automatically via the "prepare" npm script (npm install) — or the
 // equivalent lifecycle hook of the project's package manager.
 //
-// ADAPTAR: this assumes an npm-based JS/TS project. For another ecosystem,
+// ADAPT: this assumes an npm-based JS/TS project. For another ecosystem,
 // port the same idea (copy hooks/pre-push into .git/hooks/pre-push and mark
 // it executable) into that ecosystem's install lifecycle.
 

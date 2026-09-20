@@ -1,221 +1,214 @@
-# ADOPTION.md — decisões por projecto
+# ADOPTION.md — per-project decisions
 
-Este ficheiro é a versão longa do passo 3 do `README.md`. Cada secção é uma
-pergunta que o `CLAUDE.template.md` deixa em aberto de propósito — responder
-antes de considerar a adopção terminada.
+This file is the long version of step 3 in the `README.md`. Each section is
+a question that `CLAUDE.template.md` deliberately leaves open — answer it
+before considering the adoption finished.
 
 ---
 
-## 1. Que tiers se aplicam
+## 1. Which tiers apply
 
-A tabela de 8 tiers do template assume um projecto com base de dados
-própria, regras de autorização por linha (tipo RLS) e operações financeiras.
-Nem todo o projecto tem as três coisas.
+The template's 8-tier table assumes a project with its own database,
+row-level authorization rules (RLS-like) and financial operations. Not
+every project has all three.
 
-| Tier | Mantém-se sempre? | Quando reduzir/fundir |
+| Tier | Always keep? | When to reduce/merge |
 |------|---|---|
-| NON-CODE | Sim — não invoca agentes em nenhum projecto | — |
-| DISPLAY | Sim | — |
-| DEPS | Sim, se o projecto tiver gestor de dependências com lockfile | Fundir com LOGIC se não houver gate de cooldown nem processo de bump distinto |
-| LOGIC | Sim | — |
-| SECURITY | Sim, se houver qualquer noção de autorização/auth | Se o projecto for uma lib sem auth, este tier pode nunca disparar — mantê-lo na tabela na mesma, para o dia em que dispare |
-| DATA-MIGRATION | Só se houver dados em produção que se possam corromper | Fundir com SCHEMA se o projecto ainda não tiver dados reais |
-| SCHEMA | Só se houver schema (base de dados, contrato de API versionado) | Renomear para o que fizer sentido (ex.: "CONTRACT" para uma API pública) |
-| FEATURE | Sim — é o tier que dispara o fan-out completo | — |
+| NON-CODE | Yes — invokes no agents in any project | — |
+| DISPLAY | Yes | — |
+| DEPS | Yes, if the project has a package manager with a lockfile | Merge into LOGIC if there is no cooldown gate nor a distinct bump process |
+| LOGIC | Yes | — |
+| SECURITY | Yes, if there is any notion of authorization/auth | If the project is a lib with no auth, this tier may never fire — keep it in the table anyway, for the day it does |
+| DATA-MIGRATION | Only if there is production data that can be corrupted | Merge into SCHEMA if the project has no real data yet |
+| SCHEMA | Only if there is a schema (database, versioned API contract) | Rename to whatever fits (e.g. "CONTRACT" for a public API) |
+| FEATURE | Yes — it is the tier that triggers the full fan-out | — |
 
-A pergunta a fazer por tier, não a resposta: **qual é o pior erro possível
-neste tipo de mudança, e o processo proposto é proporcional a esse erro?**
-Um projecto sem dinheiro nem dados pessoais pode razoavelmente correr LOGIC e
-FEATURE sem Security a full — mas declarar isso explicitamente no
-`CLAUDE.md` adaptado, não deixar a tabela genérica a mentir sobre o que
-realmente corre.
+The question to ask per tier, not the answer: **what is the worst possible
+mistake in this kind of change, and is the proposed process proportional to
+that mistake?** A project with no money and no personal data can reasonably
+run LOGIC and FEATURE without Security at full strength — but declare that
+explicitly in the adapted `CLAUDE.md`, instead of letting the generic table
+lie about what actually runs.
 
-## 2. Que agentes fazem sentido
+## 2. Which agents make sense
 
-Os 6 agentes do template (Architect, Security, QA, Product, Frontend,
-Backend) vieram de um projecto full-stack com frontend + backend + base de
-dados próprios. Perguntas por projecto:
+The template's 6 agents (Architect, Security, QA, Product, Frontend,
+Backend) came from a full-stack project with its own frontend, backend and
+database. Questions per project:
 
-- **Frontend/Backend como agentes verticais separados só fazem sentido se
-  o projecto tiver essa separação real.** Uma CLI, uma lib, um pipeline de
-  dados não têm "frontend" — nesse caso, ou se renomeia o vertical para a
-  camada real (ex.: "CLI agent", "pipeline agent"), ou se funde num único
-  agente de implementação.
-- **Product só se paga quando há ambiguidade de UX real e frequente.** Um
-  projecto interno de ferramentas sem utilizadores externos pode nunca
-  precisar deste agente — não o forçar a existir só porque o template o
-  tem.
-- **Architect e Security são os dois que menos se cortam.** Mesmo em
-  projectos pequenos, a decisão de desenho antes de escrever e a revisão
-  antes de mergear pagam-se cedo — são os candidatos a manter mesmo quando
-  se reduz o resto.
+- **Frontend/Backend as separate vertical agents only make sense if the
+  project really has that separation.** A CLI, a lib, a data pipeline have
+  no "frontend" — in that case, either rename the vertical to the real
+  layer (e.g. "CLI agent", "pipeline agent") or merge into a single
+  implementation agent.
+- **Product only pays off when there is real, frequent UX ambiguity.** An
+  internal tooling project with no external users may never need this
+  agent — don't force it to exist just because the template has it.
+- **Architect and Security are the two you cut last.** Even in small
+  projects, design-before-writing and review-before-merging pay off early —
+  they are the ones to keep even when everything else is trimmed.
 
-**Onde vive o contexto dos agentes.** Os ficheiros de `agents/` são
-genéricos por desenho e cada agente começa por ler o `CLAUDE.md` do projecto
-— é lá que se investe a especificidade, não nos ficheiros de agente (que na
-via plugin são read-only e partilhados). O nível de detalhe que vale a pena
-ter no `CLAUDE.md` para alimentar, por exemplo, o Security agent (exemplo
-fictício):
+**Where agent context lives.** The files in `agents/` are generic by design
+and every agent starts by reading the project's `CLAUDE.md` — that is where
+you invest the specificity, not in the agent files (which, on the plugin
+path, are read-only and shared). The level of detail worth having in
+`CLAUDE.md` to feed, say, the Security agent (fictional example):
 
-- Auth: NextAuth (JWT) — sessão em cookie httpOnly
-- Autorização: middleware por role + checks por linha na camada de dados —
-  primeira linha de defesa
-- Roles: admin, gestor de equipa, utilizador final — regras de acesso
-  específicas por role
-- Rotas server-only: usam a chave de serviço (nunca exposta ao cliente)
-- Operações críticas: transacções atómicas com SELECT ... FOR UPDATE
+- Auth: NextAuth (JWT) — session in an httpOnly cookie
+- Authorization: per-role middleware + row-level checks in the data layer —
+  first line of defense
+- Roles: admin, team manager, end user — role-specific access rules
+- Server-only routes: use the service key (never exposed to the client)
+- Critical operations: atomic transactions with SELECT ... FOR UPDATE
 
-Menos específico do que isto e o agente revê às cegas; a instrução dele
-nesse caso é apontar a lacuna, não fingir que revê.
+Anything less specific than this and the agent reviews blind; its
+instruction for that case is to point out the gap, not to pretend to
+review.
 
-## 3. Que gates de CI
+## 3. Which CI gates
 
-O `ci.yml` de um projecto real com deploy automático (não incluído neste
-template — cada projecto está amarrado ao seu próprio provedor de deploy e à
-sua própria BD-as-a-service) tende a ter esta forma, que generaliza bem:
+The `ci.yml` of a real project with automated deploys (not included in this
+template — every project is tied to its own deploy provider and its own
+DB-as-a-service) tends to have this shape, which generalizes well:
 
 ```
-job "ci":     gate de dependências (se existir) → install → audit de
-              vulnerabilidades → lint → test → typecheck → build → budget
-              de tamanho de bundle (se aplicável)
-job "e2e":    depende de "ci", mas o deploy NÃO depende de "e2e" — decisão
-              explícita, documentada, revista quando o e2e amadurecer
-job "deploy": depende só de "ci"
+job "ci":     dependency gate (if any) → install → vulnerability audit
+              → lint → test → typecheck → build → bundle size budget
+              (if applicable)
+job "e2e":    depends on "ci", but deploy does NOT depend on "e2e" — an
+              explicit, documented decision, revisited as e2e matures
+job "deploy": depends on "ci" only
 ```
 
-Decisões por projecto, a fazer conscientemente e documentar no `CLAUDE.md`
-adaptado (secção "O que realmente bloqueia"):
+Per-project decisions, to be made consciously and documented in the adapted
+`CLAUDE.md` ("What actually blocks" section):
 
-- **O typecheck é gate ou disciplina manual?** No projecto de origem foi
-  disciplina manual durante meses — e isso escondeu bugs reais antes de
-  passar a gate. Decidir cedo, não por omissão.
-- **O E2E bloqueia o deploy?** Se não bloquear, dizer isso explicitamente
-  em vez de deixar a suposição implícita de que "verde = seguro para
-  produção".
-- **Há revisão humana obrigatória (PR + code owners) ou é push directo
-  para a branch principal?** Regras como "CODEOWNERS só actua em PRs" são
-  inúteis se o fluxo real for push directo — não documentar uma proteção
-  que não dispara.
+- **Is typecheck a gate or manual discipline?** In the source project it
+  was manual discipline for months — and that hid real bugs before it
+  became a gate. Decide early, not by omission.
+- **Does E2E block the deploy?** If it doesn't, say so explicitly instead
+  of leaving the implicit assumption that "green = safe for production".
+- **Is there mandatory human review (PR + code owners), or direct pushes
+  to the main branch?** Rules like "CODEOWNERS only acts on PRs" are
+  useless if the real flow is direct pushes — don't document a protection
+  that never fires.
 
-## 4. Onde vive a lista-única de pendentes
+## 4. Where the single list of open items lives
 
-O padrão que vale a pena copiar: um único ficheiro/board como "a única lista
-que conta" — tudo o que está aberto (achados, decisões pendentes,
-follow-ups) entra ali, e só ali, no momento em que é descoberto. A
-alternativa a evitar é ter 3-4 sítios diferentes (comentários no código,
-issues, um doc de notas, a memória do próprio Claude) que divergem em
-silêncio.
+The pattern worth copying: one single file/board as "the only list that
+counts" — everything open (findings, pending decisions, follow-ups) goes
+there, and only there, the moment it is discovered. The alternative to
+avoid is having 3-4 different places (code comments, issues, a notes doc,
+Claude's own memory) silently drifting apart.
 
-Decidir por projecto:
-- **Onde vive?** Um ficheiro Markdown no repo (simples, versionado, lido
-  pelo Claude); um board externo (Linear/Jira, mais visível para uma equipa
-  maior); uma issue fixada.
-- **Quem escreve nela?** Se for um ficheiro no repo, o próprio Claude
-  escreve-lhe directamente no momento em que descobre um follow-up — não
-  "lembra-se" para mais tarde.
-- **Apontar para ela no `CLAUDE.md` adaptado**, na tabela de "Documentação
-  de referência", com a frase "a única lista que conta" ou equivalente —
-  é essa frase que evita a redescoberta do mesmo item por sessões
-  diferentes.
+Decide per project:
+- **Where does it live?** A Markdown file in the repo (simple, versioned,
+  read by Claude); an external board (Linear/Jira, more visible for a
+  larger team); a pinned issue.
+- **Who writes to it?** If it is a file in the repo, Claude itself writes
+  to it directly the moment it discovers a follow-up — it does not
+  "remember it for later".
+- **Point to it from the adapted `CLAUDE.md`**, in the "Reference
+  documentation" table, with the phrase "the only list that counts" or
+  equivalent — that phrase is what prevents the same item from being
+  rediscovered by different sessions.
 
-## 5. Onde vive a fonte de verdade visual
+## 5. Where the visual source of truth lives
 
-O mesmo problema que a §4 resolve para os pendentes, aplicado ao design:
-sem um sítio declarado, tokens, paleta, tipografia e regras de componente
-dispersam-se por três ou quatro lados e divergem em silêncio. E sem esse
-ponteiro, o Frontend agent está na mesma posição em que o Security estaria
-sem o modelo de autorização declarado — a rever às cegas.
+The same problem §4 solves for open items, applied to design: without a
+declared home, tokens, palette, typography and component rules scatter
+across three or four places and silently diverge. And without that pointer,
+the Frontend agent is in the same position Security would be without a
+declared authorization model — reviewing blind.
 
-Decidir por projecto (as perguntas, não as respostas):
+Decide per project (the questions, not the answers):
 
-- **Onde vive a fonte de verdade visual?** Um doc no repo (ex.:
-  `docs/design-system.md`), um export de tokens de uma ferramenta de design,
-  uma skill de design instalada — ou nada de formal.
-- **Quem a pode alterar, e o que acontece quando o código e ela divergem?**
-  (qual dos dois é que se corrige?)
-- **Apontar para ela na tabela "Documentação de referência" do `CLAUDE.md`**
-  adaptado — é de lá que o Frontend agent a vai ler.
-- **Se o projecto não tiver nenhuma, dizê-lo explicitamente** no `CLAUDE.md`
-  em vez de deixar o agente a assumir uma que não existe.
+- **Where does the visual source of truth live?** A doc in the repo (e.g.
+  `docs/design-system.md`), a token export from a design tool, an installed
+  design skill — or nothing formal.
+- **Who can change it, and what happens when the code and it diverge?**
+  (which of the two gets fixed?)
+- **Point to it from the adapted `CLAUDE.md`'s "Reference documentation"
+  table** — that is where the Frontend agent will read it from.
+- **If the project has none, say so explicitly** in `CLAUDE.md` instead of
+  letting the agent assume one that doesn't exist.
 
-Deliberadamente agnóstico: nenhuma ferramenta nomeada. Cada projecto aponta
-para o que tiver.
+Deliberately agnostic: no tool named. Each project points to whatever it
+has.
 
-## 6. O manual de orquestração (opcional, tardio)
+## 6. The orchestration manual (optional, late)
 
-O projecto de origem desta framework tem um segundo documento, à parte do
-`CLAUDE.md`, com os rituais específicos do papel de orquestrador naquele
-projecto (ambientes de trabalho isolados por bloco, ferramentas próprias de
-ensaio de mudanças de schema, convenções da máquina local). Não veio para
-este template porque **é demasiado cedo** — esses rituais só se escrevem
-depois de existirem, isto é, depois de o projecto já ter passado por
-incidentes e sessões suficientes para haver um padrão a documentar.
+The source project of this framework has a second document, separate from
+`CLAUDE.md`, with the orchestrator-role rituals specific to that project
+(isolated working environments per block, its own tools for rehearsing
+schema changes, local-machine conventions). It did not come into this
+template because **it is too early** — those rituals are only written after
+they exist, that is, after the project has been through enough incidents
+and sessions for there to be a pattern worth documenting.
 
-Quando o projecto novo atingir esse ponto (tipicamente: já há um padrão
-repetido 2-3 vezes que vale a pena não reinventar a cada sessão), criar o
-equivalente e apontar para ele a partir do `CLAUDE.md`, tal como projectos
-maduros costumam fazer. Escrevê-lo cedo demais produz um documento que
-descreve rituais hipotéticos, não reais — e isso não se distingue de ficção
-até alguém tentar segui-lo.
+When the new project reaches that point (typically: a pattern has repeated
+2-3 times and is worth not reinventing every session), create the
+equivalent and point to it from `CLAUDE.md`, as mature projects tend to do.
+Writing it too early produces a document describing hypothetical rituals,
+not real ones — and that is indistinguishable from fiction until someone
+tries to follow it.
 
-## 7. Supply-chain: audit + gate de cooldown de dependências
+## 7. Supply chain: audit + dependency cooldown gate
 
-Duas camadas, duas decisões:
+Two layers, two decisions:
 
-- **Audit de vulnerabilidades no CI** (dependências *velhas* com CVEs) — a
-  forma canónica está na §3; monta-se no CI do projecto, a Batuta não envia
-  CI nenhum.
-- **Gate de cooldown** (dependências *demasiado novas*, defesa
-  supply-chain) — ver `hooks/README.md`, decisão explicada ali. Resumo:
-  opcional, específico de ecossistema, só compensa quando o projecto já tem
-  CI a sério.
+- **Vulnerability audit in CI** (*old* dependencies with CVEs) — the
+  canonical shape is in §3; it is wired into the project's CI, Batuta ships
+  no CI at all.
+- **Cooldown gate** (*too-new* dependencies, supply-chain defense) — see
+  `hooks/README.md`, the decision is explained there. Summary: optional,
+  ecosystem-specific, only worth it once the project has serious CI.
 
-**Como se detectam as vulnerabilidades** (o sensor sem o qual as camadas
-não funcionam): um auditor compara as versões do lockfile com uma base de
-dados de advisories públicos (GitHub Advisory Database, OSV) e falha quando
-encontra uma vulnerabilidade conhecida acima do limiar. Cada ecossistema
-tem o seu — `npm audit` (Node), `pip-audit` (Python), `cargo audit` (Rust),
-`govulncheck` (Go), `osv-scanner` (multi-ecossistema). Três sítios onde o
-correr, do mais forte ao mais leve:
+**How vulnerabilities are detected** (the sensor without which the layers
+don't work): an auditor compares the lockfile's versions against a public
+advisory database (GitHub Advisory Database, OSV) and fails when it finds a
+known vulnerability above the threshold. Each ecosystem has its own —
+`npm audit` (Node), `pip-audit` (Python), `cargo audit` (Rust),
+`govulncheck` (Go), `osv-scanner` (multi-ecosystem). Three places to run
+it, strongest to lightest:
 
-1. **No CI, como gate** — falha o pipeline com HIGH/CRITICAL em
-   dependências de produção (ex.: `npm audit --omit=dev`). É a camada que
-   bloqueia deploys.
-2. **Alertas da plataforma** (Dependabot/Renovate ou equivalente) —
-   vigilância contínua entre pushes, com PRs de bump automáticos se se
-   quiser.
-3. **Informativo na sessão** — um hook de arranque que imprime o estado (o
-   projecto de origem corre o audit num SessionStart e mostra "0
-   high/critical" ao abrir cada sessão): não bloqueia, mantém o número à
-   vista de quem trabalha.
+1. **In CI, as a gate** — fails the pipeline on HIGH/CRITICAL in
+   production dependencies (e.g. `npm audit --omit=dev`). This is the layer
+   that blocks deploys.
+2. **Platform alerts** (Dependabot/Renovate or equivalent) — continuous
+   watching between pushes, with automated bump PRs if you want them.
+3. **Session-start information** — a startup hook that prints the status
+   (the source project runs the audit in a SessionStart hook and shows
+   "0 high/critical" at the start of every session): it doesn't block, it
+   keeps the number in sight of whoever is working.
 
-Nota honesta: o auditor só vê vulnerabilidades CONHECIDAS — com advisory
-publicado. É exactamente por isso que o cooldown existe como camada
-separada: cobre a janela em que um pacote malicioso acabado de publicar
-ainda não tem advisory nenhum.
+Honest note: the auditor only sees KNOWN vulnerabilities — ones with a
+published advisory. That is exactly why the cooldown exists as a separate
+layer: it covers the window in which a freshly published malicious package
+has no advisory yet.
 
-O que NÃO é opcional é a decisão ser explícita: adoptar as camadas, ou
-declarar a ausência na secção "O que realmente bloqueia (e o que não)" do
-`CLAUDE.md` adaptado. Um projecto sem audit nem cooldown pode ser uma
-escolha razoável na fase dele — sem gate NENHUM *e sem o dizer* é o
-silêncio que esta framework existe para eliminar.
+What is NOT optional is making the decision explicit: adopt the layers, or
+declare their absence in the "What actually blocks (and what doesn't)"
+section of the adapted `CLAUDE.md`. A project with no audit and no cooldown
+can be a reasonable choice at its stage — no gate at all *and unsaid* is
+the silence this framework exists to eliminate.
 
-## 8. Checklist final antes de considerar a adopção terminada
+## 8. Final checklist before calling the adoption done
 
-- [ ] `CLAUDE.md` do projecto sem nenhum `{{PLACEHOLDER}}` por preencher
-- [ ] Todas as secções `<!-- ADAPTAR -->` foram lidas e resolvidas (adaptadas
-      ou removidas explicitamente — não deixadas como estavam)
-- [ ] A tabela de tiers reflecte o que o projecto realmente tem (secção 1)
-- [ ] Os agentes existentes fazem sentido para a stack real (secção 2)
-- [ ] O hook de pre-push está instalado e a correr comandos reais (`npm
-      install` imprime a confirmação)
-- [ ] A lista-única de pendentes existe e está referenciada no `CLAUDE.md`
-      (secção 4)
-- [ ] A fonte de verdade visual está declarada no `CLAUDE.md` — ou a sua
-      ausência está explícita (secção 5)
-- [ ] Supply-chain decidido explicitamente: audit de vulnerabilidades no CI
-      e/ou gate de cooldown adoptados, OU a ausência declarada em "O que
-      realmente bloqueia" do `CLAUDE.md` (secção 7)
-- [ ] `docs/security-checklist.md` e `docs/test-conventions.md` foram
-      criados (mesmo que curtos) — o `CLAUDE.md` aponta para eles mas não
-      os substitui
+- [ ] The project's `CLAUDE.md` has no `{{PLACEHOLDER}}` left unfilled
+- [ ] Every `<!-- ADAPT -->` section was read and resolved (adapted or
+      explicitly removed — not left as it came)
+- [ ] The tier table reflects what the project actually has (section 1)
+- [ ] The existing agents make sense for the real stack (section 2)
+- [ ] The pre-push hook is installed and running real commands
+      (`npm install` prints the confirmation)
+- [ ] The single list of open items exists and is referenced in
+      `CLAUDE.md` (section 4)
+- [ ] The visual source of truth is declared in `CLAUDE.md` — or its
+      absence is explicit (section 5)
+- [ ] Supply chain decided explicitly: vulnerability audit in CI and/or
+      cooldown gate adopted, OR the absence declared in `CLAUDE.md`'s
+      "What actually blocks" (section 7)
+- [ ] `docs/security-checklist.md` and `docs/test-conventions.md` were
+      created (even if short) — `CLAUDE.md` points to them but does not
+      replace them

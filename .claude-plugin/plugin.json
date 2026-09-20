@@ -1,7 +1,7 @@
 {
   "name": "batuta",
   "version": "0.1.0",
-  "description": "Framework de desenvolvimento AI-first — o processo escala com o risco, não com o hábito. Tiers de mudança, agentes de revisão read-only, gate de declaração de tier e regras de contenção de custo de tokens.",
+  "description": "AI-first development framework — process scales with risk, not with habit. Change tiers, read-only review agents, a tier-declaration gate and token-cost containment rules.",
   "author": {
     "name": "Ahlut",
     "url": "https://github.com/Ahlut"
