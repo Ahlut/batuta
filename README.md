@@ -135,15 +135,19 @@ do that. The verticals (frontend, backend) are context hygiene, not
 architecture — collapse them if your project doesn't need the split. Models
 are a cost default, swapped per task.
 
-The other half is where Batuta deliberately disagrees: the agent checking
-its own pipeline. A review inside the same context shares the implementer's
-assumptions and its blind spots — that is not a review, it is a re-read. A
-*skill* loads instructions into the same context; a *subagent* gets a fresh
-one. Only the second can be adversarial, and only if it cannot write. That
-separation is older than language models, and nothing in the current
-generation removes the reason for it. If a future harness offers "review in
-a fresh context with no write tools" natively, the agent files become a
-configuration detail. The rule stays.
+The other half is where Batuta deliberately disagrees: the agent grading
+its own pipeline. A review inside the same context can still find problems,
+but it starts from the implementer's assumptions and inherits its blind
+spots. A *skill* loads instructions into that same context; a *subagent*
+starts from a fresh one. Separate contexts and restricted permissions make a
+review more independent; they do not, by themselves, guarantee that errors
+get caught — that is what the tests and the gates are for. And the
+restriction is a role signal, not a sandbox: reviewers keep `Bash` (see
+"Tools per agent" in the template for the honest note). Separating who
+writes from who reviews is older than language models, and nothing in the
+current generation removes the reason for it. If a future harness offers
+"review in a fresh context with no write tools" natively, the agent files
+become a configuration detail. The rule stays.
 
 ## How to adopt — plugin or copy-paste
 
