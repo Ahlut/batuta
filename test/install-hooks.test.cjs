@@ -40,8 +40,11 @@ function install(cwd) {
   return { status: r.status, out: (r.stdout || '') + (r.stderr || '') };
 }
 
+// realpath on purpose: on Windows CI the temp dir comes back as an 8.3 short
+// name (RUNNER~1) while git answers with the long one — same folder, two
+// spellings.
 function hooksPath(cwd) {
-  return path.resolve(cwd, git(cwd, 'rev-parse --git-path hooks'));
+  return fs.realpathSync.native(path.resolve(cwd, git(cwd, 'rev-parse --git-path hooks')));
 }
 
 let failed = 0;
