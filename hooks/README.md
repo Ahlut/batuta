@@ -21,18 +21,31 @@ add a suite, or adapt the command in `pre-push`.
 
 Installation (Node/npm project):
 
-1. Copy `pre-push` and `install-hooks.js` into `scripts/` in the project.
+1. Copy `pre-push` and `install-hooks.mjs` into `scripts/` in the project.
 2. Edit `pre-push` — swap `npm run lint` / `npm test` for the project's
    real commands if it is another stack.
 3. Add to `package.json`:
    ```json
-   { "scripts": { "prepare": "node scripts/install-hooks.js" } }
+   { "scripts": { "prepare": "node scripts/install-hooks.mjs" } }
    ```
    `prepare` runs automatically after `npm install`, which copies the hook
-   into `.git/hooks/pre-push` on any machine that clones the repository —
+   into the repository's hooks directory on any machine that clones it —
    no manual install needed.
 4. Confirm: `npm install` should print
-   `install-hooks: installed pre-push`.
+   `install-hooks: installed pre-push → <path>`.
+
+What the installer does, so nothing happens behind your back:
+
+- It asks git where hooks live (`git rev-parse --git-path hooks`). That
+  makes it work in a linked worktree (hooks are shared through the main
+  repository's `.git`) and honour a configured `core.hooksPath`. The first
+  version looked for `.git/hooks` literally, skipped every worktree, and
+  blamed "CI" in the message — an external review caught it.
+- It never overwrites a hook it did not write. An existing, different
+  `pre-push` is renamed to `pre-push.bak-<timestamp>` first; an identical
+  one is left alone. Merging what the old hook did is on you.
+- Outside a git repository (a tarball, an exported source tree) it exits 0
+  and says so.
 
 For another package manager/ecosystem, port the same idea: copy
 `pre-push` into `.git/hooks/pre-push` and mark it executable, triggered
@@ -110,6 +123,24 @@ Planned evolution (not implemented): a second gate validating, when a
 block closes, that the declared tier's mandatory agents actually ran. It
 requires state tracking across harness events; it stays documented as a
 next step instead of shipped half-done.
+
+## Tests
+
+`test/` at the repository root holds the battery for both hooks and for
+the agents' frontmatter — plain Node, no dependencies:
+
+```
+node test/tier-gate.test.cjs
+node test/install-hooks.test.cjs
+node test/agents-frontmatter.test.cjs
+```
+
+The tier-gate cases are the ones an external review ran by hand (no
+marker, valid marker, stale marker, exempt paths, `.json` not exempt,
+UTF-16 marker, malformed stdin) plus the hole that review found: a prefix
+such as `TIER: LOGICALLY_INVALID` used to pass as LOGIC. CI runs the three
+files on Linux and Windows (`.github/workflows/test.yml`) — the worktree
+and PowerShell cases only mean something on the second.
 
 ## Dependency cooldown gate — optional, not included
 

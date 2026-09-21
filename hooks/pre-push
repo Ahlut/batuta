@@ -2,7 +2,7 @@
 # Pre-push hook — runs automatically before every git push.
 # Blocks the push if lint or tests fail.
 # Installed via: the project's install script (should run automatically on
-# dependency install — see install-hooks.js and README.md in this folder).
+# dependency install — see install-hooks.mjs and README.md in this folder).
 #
 # ADAPT: swap the two commands below for the project's real equivalents
 # (e.g. `pnpm lint`, `cargo clippy`, `pytest`, `go test ./...`).

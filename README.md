@@ -1,6 +1,7 @@
 # Craveira
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![tests](https://github.com/Ahlut/craveira/actions/workflows/test.yml/badge.svg)](https://github.com/Ahlut/craveira/actions/workflows/test.yml)
 
 **Every change gets the care it deserves.** *Craveira* (kra-VAY-ra) is the
 Portuguese word for the gauge a craftsman uses to size each piece — an
@@ -189,7 +190,7 @@ step, lives in `ADOPTION.md`.
    cp CLAUDE.template.md /path/to/project/CLAUDE.md
    cp -r agents /path/to/project/.claude/agents
    cp -r skills /path/to/project/.claude/skills
-   cp hooks/pre-push hooks/install-hooks.js /path/to/project/scripts/
+   cp hooks/pre-push hooks/install-hooks.mjs /path/to/project/scripts/
    cp docs/token-costs.md /path/to/project/docs/token-costs.md
    mkdir -p /path/to/project/docs/specs
    ```
@@ -211,10 +212,14 @@ step, lives in `ADOPTION.md`.
 4. **Wire the pre-push hook** (5 min)
    ```bash
    # package.json (or equivalent)
-   "scripts": { "prepare": "node scripts/install-hooks.js" }
+   "scripts": { "prepare": "node scripts/install-hooks.mjs" }
    ```
    Edit `scripts/pre-push` to the project's real lint/test commands (the
    template assumes `npm run lint` + `npm test` — swap for another stack).
+   The installer puts the hook wherever git says hooks live (linked
+   worktrees and `core.hooksPath` included) and backs up a different
+   existing `pre-push` instead of overwriting it — details in
+   `hooks/README.md`.
 
 5. **Decide where the single list of open items lives** (2 min) — keeping
    one single place with everything open (findings, pending decisions,

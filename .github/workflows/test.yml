@@ -1,0 +1,33 @@
+name: tests
+
+# The framework tests itself: the tier gate, the installer and the agents'
+# frontmatter, on Linux and on Windows (the PowerShell/UTF-16 and worktree
+# cases only mean something there). No dependencies to install.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: git identity for the temp repos the tests create
+        run: |
+          git config --global user.email ci@example.com
+          git config --global user.name ci
+      - name: tier gate
+        run: node test/tier-gate.test.cjs
+      - name: installer
+        run: node test/install-hooks.test.cjs
+      - name: agents and skills frontmatter
+        run: node test/agents-frontmatter.test.cjs

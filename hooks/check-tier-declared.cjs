@@ -45,7 +45,9 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const TIER_RE = /TIER:\s*(NON-CODE|DISPLAY|DEPS|LOGIC|SECURITY|DATA-MIGRATION|SCHEMA|FEATURE)/i;
+// Whole-word tier names only: an external review showed the first version
+// took "TIER: LOGICALLY_INVALID" for LOGIC. The \b closes that hole.
+const TIER_RE = /TIER:\s*(NON-CODE|DISPLAY|DEPS|LOGIC|SECURITY|DATA-MIGRATION|SCHEMA|FEATURE)\b/i;
 const EXEMPT_RE = /\.(md|txt)$|(^|[\\/])docs[\\/]|(^|[\\/])\.claude[\\/]|(^|[\\/])scratchpad[\\/]/i;
 
 function block(reason) {

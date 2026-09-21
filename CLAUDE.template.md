@@ -190,6 +190,10 @@ or answering a question needs no agents.
 **Tie-break rules:**
 - In doubt between LOGIC and SECURITY/SCHEMA → go up.
 - In doubt between DISPLAY and LOGIC → keep LOGIC.
+- DISPLAY that puts data in front of someone who could not see it before
+  (a new field in a read query is still a new field a role can now read;
+  same for a new column in an export or a new value in a log) → evaluate
+  as SECURITY. "Read-only" describes the query, not the risk.
 - FEATURE only if the change REALLY crosses schema + authorization + UI in
   a single unit of work.
 
@@ -227,6 +231,21 @@ That is wrong. Before writing any code of tier >= LOGIC, stop and check:
 before writing. Implementing and then asking Security for a review is not
 the same as Security before implementing — Security can find problems that
 change the design, not just the code.
+
+**Precedence, when two rules seem to disagree:**
+- The tier table names the mandatory agents. R5 in `docs/token-costs.md`
+  (the light lane) is the one explicit exception: for LOGIC and small
+  additive changes the orchestrator may do the Security pass and the
+  migration inline and delegate only the UI — and says so in the TIER
+  preamble ("Agents: none, Security inline"). A stated lane is a decision;
+  silence is a skip.
+- Timing. Architect and Security run BEFORE implementation, because they
+  can change the design. QA runs AFTER, because it writes tests against
+  real code. The anti-skip rule above is about the "before" agents — QA
+  arriving once the code exists is the rule, not a skip.
+- Bugfixes are the one place a test precedes the code ("Surgical TDD",
+  below): the failing test is written first; QA's full pass still comes
+  after the fix.
 
 ---
 
