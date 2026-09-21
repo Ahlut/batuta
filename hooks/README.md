@@ -41,9 +41,13 @@ What the installer does, so nothing happens behind your back:
   repository's `.git`) and honour a configured `core.hooksPath`. The first
   version looked for `.git/hooks` literally, skipped every worktree, and
   blamed "CI" in the message — an external review caught it.
-- It never overwrites a hook it did not write. An existing, different
-  `pre-push` is renamed to `pre-push.bak-<timestamp>` first; an identical
-  one is left alone. Merging what the old hook did is on you.
+- It never touches a hook it did not write. If a different `pre-push` is
+  already there, it installs nothing, says so, and leaves the existing
+  controls running — merge the two by hand, or run
+  `CRAVEIRA_HOOKS=replace npm install` to have the old one renamed to
+  `pre-push.bak-<timestamp>` and replaced. (The first version backed up
+  and replaced by default; a backup on disk is not a control that runs.)
+  An identical one is left alone.
 - Outside a git repository (a tarball, an exported source tree) it exits 0
   and says so.
 
@@ -119,10 +123,15 @@ automatically** (the `${CLAUDE_PLUGIN_ROOT}` path resolves to the
 installed plugin's folder). If you don't want the gate, use manual
 adoption and don't copy this hook.
 
-Planned evolution (not implemented): a second gate validating, when a
-block closes, that the declared tier's mandatory agents actually ran. It
-requires state tracking across harness events; it stays documented as a
-next step instead of shipped half-done.
+Planned evolution (not implemented): evidence tied to the diff. Today the
+gate checks that a tier was declared, not that the declared reviewers ran
+on the code that got committed — a fresh marker saying `TIER: SECURITY`
+opens the door with no proof the Security agent ever looked. The next step
+is to record classification, reviews and test results per diff hash and
+invalidate that evidence when the code changes, so the control stops
+depending on a file the agent itself can write. It requires state across
+harness events; it stays documented as a next step instead of shipped
+half-done.
 
 ## Tests
 
@@ -132,15 +141,24 @@ the agents' frontmatter — plain Node, no dependencies:
 ```
 node test/tier-gate.test.cjs
 node test/install-hooks.test.cjs
+node test/pre-push.test.cjs
 node test/agents-frontmatter.test.cjs
 ```
 
 The tier-gate cases are the ones an external review ran by hand (no
 marker, valid marker, stale marker, exempt paths, `.json` not exempt,
 UTF-16 marker, malformed stdin) plus the hole that review found: a prefix
-such as `TIER: LOGICALLY_INVALID` used to pass as LOGIC. CI runs the three
-files on Linux and Windows (`.github/workflows/test.yml`) — the worktree
-and PowerShell cases only mean something on the second.
+such as `TIER: LOGICALLY_INVALID` used to pass as LOGIC. The pre-push test
+runs the real hook under `sh` against a throwaway `package.json`: lint
+failing, tests failing, both passing. CI runs all of them on Linux and
+Windows (`.github/workflows/test.yml`) — the worktree and PowerShell cases
+only mean something on the second.
+
+What the tests do not prove: that Claude Code loaded the agents (the
+frontmatter check catches the known way that fails; it is not a YAML
+parser), and that the gate behaves inside a live session. That is what a
+pilot on a real project is for — one visual change, one logic change, one
+permissions change, and the expected blocks observed.
 
 ## Dependency cooldown gate — optional, not included
 

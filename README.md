@@ -123,6 +123,28 @@ of each sub-part, not to the nominal tier of the whole feature.
 
 ---
 
+### One agent or many?
+
+A fair objection: "with today's models you want one agent with skills, not
+six; it decides for itself what to run in the background and checks its own
+pipeline." Half of that is how Craveira already works. There is one lead
+agent — the one you talk to. The six files in `agents/` are not six agents
+running; they are the role cards the lead agent hands out when the tier
+table says a change deserves a second pair of eyes, and it decides when to
+do that. The verticals (frontend, backend) are context hygiene, not
+architecture — collapse them if your project doesn't need the split. Models
+are a cost default, swapped per task.
+
+The other half is where Craveira deliberately disagrees: the agent checking
+its own pipeline. A review inside the same context shares the implementer's
+assumptions and its blind spots — that is not a review, it is a re-read. A
+*skill* loads instructions into the same context; a *subagent* gets a fresh
+one. Only the second can be adversarial, and only if it cannot write. That
+separation is older than language models, and nothing in the current
+generation removes the reason for it. If a future harness offers "review in
+a fresh context with no write tools" natively, the agent files become a
+configuration detail. The rule stays.
+
 ## How to adopt — plugin or copy-paste
 
 **Via plugin (least friction)** — this repo is a Claude Code plugin
@@ -217,9 +239,10 @@ step, lives in `ADOPTION.md`.
    Edit `scripts/pre-push` to the project's real lint/test commands (the
    template assumes `npm run lint` + `npm test` — swap for another stack).
    The installer puts the hook wherever git says hooks live (linked
-   worktrees and `core.hooksPath` included) and backs up a different
-   existing `pre-push` instead of overwriting it — details in
-   `hooks/README.md`.
+   worktrees and `core.hooksPath` included) and does not touch a different
+   `pre-push` that is already there — merge by hand, or
+   `CRAVEIRA_HOOKS=replace npm install` to back it up and replace it.
+   Details in `hooks/README.md`.
 
 5. **Decide where the single list of open items lives** (2 min) — keeping
    one single place with everything open (findings, pending decisions,
@@ -254,10 +277,19 @@ process — there is no more setup.
   (the per-block work cycle, "what is not automated") were absorbed into
   `CLAUDE.template.md`; the rest is for each project to write as its own
   rituals manual after the rituals exist.
-- **No CI workflow** — the source project's CI pipeline is tied to its own
-  deploy provider and its own DB-as-a-service; ADOPTION.md says what an
-  equivalent pipeline should cover, but writing the YAML belongs to the
-  project.
+- **No CI workflow for your project** — the source project's CI pipeline
+  is tied to its own deploy provider and its own DB-as-a-service;
+  ADOPTION.md says what an equivalent pipeline should cover, but writing
+  the YAML belongs to the project. (The workflow in this repo tests
+  Craveira itself — the hooks and the agent files — not an adopting
+  project.)
+- **No proof that the review happened** — the tier gate checks that a tier
+  was declared, not that the declared reviewers ran on the diff that got
+  committed. Step 8 of the flow ("did the promised agents run?") is
+  discipline, and the docs say so. The planned next step is evidence tied
+  to the diff hash — classification, reviews and test results recorded per
+  diff and invalidated when the code changes (see `hooks/README.md`,
+  "Planned evolution").
 
 ---
 
@@ -271,4 +303,5 @@ session through agent fan-out; a privileged function that lost a guard when
 it was recreated by copy instead of edited; a recursive authorization rule
 that stayed live unnoticed for a good while. They were kept so the "why"
 behind each rule survives the copy, without exposing details of the product
-they came from.
+they came from. All of them were fixed at the time; they are here as the
+origin of a rule, not as a status report.

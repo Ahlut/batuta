@@ -1,9 +1,9 @@
 // Frontmatter checks for agents/*.md and skills/*/SKILL.md.
 // No dependencies. Run: node test/agents-frontmatter.test.cjs
 //
-// Encodes a lesson that cost the source project months: an unquoted
-// `description` containing ": " is invalid YAML, and the harness then ignores
-// the agent silently. Three of six agents never loaded because of it.
+// An unquoted `description` containing ": " is invalid YAML, and the harness
+// then ignores the agent silently — the file looks installed and never
+// loads. This is not a YAML parser; it catches the known way that fails.
 
 'use strict';
 

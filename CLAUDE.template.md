@@ -175,7 +175,10 @@ before any push, regardless of everything else.
 
 _Model: Opus → Architect and Security. Sonnet → QA, Frontend, Backend.
 Always use the alias (`opus`/`sonnet`), never pinned model IDs — aliases
-track the newest version of the family automatically._
+track the newest version of the family automatically. The split is a cost
+default, not a requirement: any model can sit in any role, and the
+orchestrator may change it per task. What does not change with the model
+is who may write — reviewers don't._
 
 <!-- ADAPT: if the project has no database of its own, no payments, or no
 concept of "schema", remove/merge the tiers that don't apply (see
@@ -246,6 +249,21 @@ change the design, not just the code.
 - Bugfixes are the one place a test precedes the code ("Surgical TDD",
   below): the failing test is written first; QA's full pass still comes
   after the fix.
+
+**The light lane, made explicit.** What R5 lets you dispense with — and
+what it does not. Anything not listed here stays exactly as the tier
+table says.
+
+| Situation | Dispensable | Still mandatory | Only while |
+|-----------|-------------|-----------------|------------|
+| **LOGIC, isolated** — new hook, util, mutation or stateful component | Architect; Security as a separate agent | QA; a short inline spec in the TIER preamble; a Security pass done inline by the orchestrator and named in the preamble | The diff touches no authorization rule, privileged function, payment path or new data exposure. If it does → SECURITY, in full. |
+| **Additive migration** — one column, index or constraint | Security as a separate agent; delegating the migration to an agent | Architect (the spec can be short, but it is still committed to `docs/specs/`); QA; Security pass inline by the orchestrator; rollback script; entry in the migrations state doc | Reversible (the column can be dropped), no backfill, no change to who can read or write what. A backfill → DATA-MIGRATION; a new policy or privileged function → SCHEMA/FEATURE, in full. |
+| **FEATURE** crossing schema + authorization + UI | Nothing | Architect, Security before AND after, QA, persistent spec | — |
+
+"Small" is measured by exposure of data, permissions, reversibility and
+operational impact — never by line count. A 3-line change to an
+authorization rule is SECURITY; a 300-line UI refactor that exposes no new
+data is LOGIC.
 
 ---
 

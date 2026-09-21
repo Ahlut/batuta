@@ -22,7 +22,7 @@ missing ("only when X") rather than the rule itself being missing.
    unrelated adjustments bundled together.
 3. **Describe the "before"**: what real situation (even anonymized)
    exposed the missing rule, or what went wrong without it.
-4. **Run the tests** if you touch `hooks/`, `agents/` or `skills/` — three
+4. **Run the tests** if you touch `hooks/`, `agents/` or `skills/` — the
    plain-Node files in `test/`, no dependencies (see `hooks/README.md`,
    "Tests"). CI runs them on Linux and Windows; a hook change without a
    case in the battery is a change nobody can check.

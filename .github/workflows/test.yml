@@ -29,5 +29,7 @@ jobs:
         run: node test/tier-gate.test.cjs
       - name: installer
         run: node test/install-hooks.test.cjs
+      - name: pre-push (the real hook against a throwaway project)
+        run: node test/pre-push.test.cjs
       - name: agents and skills frontmatter
         run: node test/agents-frontmatter.test.cjs

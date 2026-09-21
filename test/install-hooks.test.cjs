@@ -35,8 +35,12 @@ function project({ init = true } = {}) {
   return dir;
 }
 
-function install(cwd) {
-  const r = spawnSync(process.execPath, ['scripts/install-hooks.mjs'], { cwd, encoding: 'utf8' });
+function install(cwd, env = {}) {
+  const r = spawnSync(process.execPath, ['scripts/install-hooks.mjs'], {
+    cwd,
+    encoding: 'utf8',
+    env: { ...process.env, CRAVEIRA_HOOKS: '', ...env },
+  });
   return { status: r.status, out: (r.stdout || '') + (r.stderr || '') };
 }
 
@@ -65,10 +69,15 @@ function cleanup(dir) { try { fs.rmSync(dir, { recursive: true, force: true }); 
   const backups = fs.readdirSync(hooksPath(dir)).filter((f) => f.startsWith('pre-push.bak-'));
   check('plain repo: second run is a no-op, no backup created', again.status === 0 && /already installed/.test(again.out) && backups.length === 0, again.out);
 
-  fs.writeFileSync(dest, '#!/bin/sh\necho someone else\n');
+  const theirs = '#!/bin/sh\necho someone else\n';
+  fs.writeFileSync(dest, theirs);
   const third = install(dir);
   const backups2 = fs.readdirSync(hooksPath(dir)).filter((f) => f.startsWith('pre-push.bak-'));
-  check('plain repo: a different existing hook is backed up, not overwritten silently', third.status === 0 && backups2.length === 1 && fs.readFileSync(dest, 'utf8') === PRE_PUSH, third.out);
+  check('plain repo: a different existing hook is left untouched, and the installer says so', third.status === 0 && /not touching it/.test(third.out) && fs.readFileSync(dest, 'utf8') === theirs && backups2.length === 0, third.out);
+
+  const fourth = install(dir, { CRAVEIRA_HOOKS: 'replace' });
+  const backups3 = fs.readdirSync(hooksPath(dir)).filter((f) => f.startsWith('pre-push.bak-'));
+  check('plain repo: CRAVEIRA_HOOKS=replace backs the old hook up and installs ours', fourth.status === 0 && backups3.length === 1 && fs.readFileSync(dest, 'utf8') === PRE_PUSH && fs.readFileSync(path.join(hooksPath(dir), backups3[0]), 'utf8') === theirs, fourth.out);
   cleanup(dir);
 }
 

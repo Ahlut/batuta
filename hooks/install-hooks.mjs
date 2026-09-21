@@ -5,9 +5,14 @@
 //
 // Honest about where hooks live: it asks git (`git rev-parse --git-path
 // hooks`), which resolves linked worktrees (hooks are shared through the
-// common git dir) and a configured `core.hooksPath`. It never overwrites a
-// hook it did not write: an existing, different pre-push is backed up next
-// to it first, and an identical one is left alone.
+// common git dir) and a configured `core.hooksPath`.
+//
+// It never touches a hook it did not write. A different pre-push already in
+// place keeps running and ours is NOT installed — the message says so, and
+// how to merge. A backup on disk is not a control that runs, so "back up
+// and replace" is opt-in: CRAVEIRA_HOOKS=replace. An identical hook is left
+// alone. The script exits 0 either way: a failing "prepare" would block
+// dependency installation, which is the wrong thing to punish.
 //
 // .mjs on purpose: runs as ESM whatever the project's "type" field says —
 // the same lesson as the .cjs of the tier gate, from the other side.
@@ -16,12 +21,13 @@
 // port the same idea into that ecosystem's install lifecycle.
 
 import { chmodSync, copyFileSync, existsSync, mkdirSync, readFileSync, renameSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
+const replace = process.env.CRAVEIRA_HOOKS === "replace";
 
 let hooksDir;
 try {
@@ -49,6 +55,14 @@ for (const hook of hooks) {
   if (existsSync(dest)) {
     if (readFileSync(src, "utf8") === readFileSync(dest, "utf8")) {
       console.log(`install-hooks: ${hook} already installed (${dest})`);
+      continue;
+    }
+    if (!replace) {
+      console.log(
+        `install-hooks: a different ${hook} already exists at ${dest} — not touching it, so whatever it checks keeps running.\n` +
+          `  Merge the commands from ${relative(root, src)} into it by hand, or run CRAVEIRA_HOOKS=replace npm install ` +
+          `to back it up (${hook}.bak-<timestamp>) and replace it.`
+      );
       continue;
     }
     const backup = `${dest}.bak-${new Date().toISOString().replace(/[:.]/g, "-")}`;
