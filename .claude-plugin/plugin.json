@@ -1,13 +1,13 @@
 {
-  "name": "batuta",
+  "name": "craveira",
   "version": "0.1.0",
   "description": "AI-first development framework — process scales with risk, not with habit. Change tiers, read-only review agents, a tier-declaration gate and token-cost containment rules.",
   "author": {
     "name": "Ahlut",
     "url": "https://github.com/Ahlut"
   },
-  "homepage": "https://github.com/Ahlut/batuta",
-  "repository": "https://github.com/Ahlut/batuta",
+  "homepage": "https://github.com/Ahlut/craveira",
+  "repository": "https://github.com/Ahlut/craveira",
   "license": "MIT",
   "keywords": ["workflow", "agents", "process", "tiers", "code-review", "security"]
 }

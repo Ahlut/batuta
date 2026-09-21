@@ -1,16 +1,16 @@
 {
-  "name": "batuta",
+  "name": "craveira",
   "owner": {
     "name": "Ahlut",
     "url": "https://github.com/Ahlut"
   },
   "metadata": {
-    "description": "Batuta marketplace — AI-first development framework",
+    "description": "Craveira marketplace — AI-first development framework",
     "version": "0.1.0"
   },
   "plugins": [
     {
-      "name": "batuta",
+      "name": "craveira",
       "source": "./",
       "description": "AI-first development framework: change tiers, read-only review agents, a tier-declaration gate and token-cost containment. Installs the agents, the skills and the PreToolUse hook; the project's CLAUDE.md and the git pre-push hook remain manual adoption steps (see ADOPTION.md)."
     }

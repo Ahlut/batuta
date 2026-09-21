@@ -1,7 +1,7 @@
 # Hooks — installation
 
 > **Before installing any hook from this folder, read its content.**
-> Whoever clones a project that uses Batuta ends up with scripts running
+> Whoever clones a project that uses Craveira ends up with scripts running
 > automatically (on push, or on every assistant edit) without necessarily
 > having noticed. They are ~25-100 lines each — reading them costs a
 > minute, and it is the difference between adopting a gate and running
@@ -100,7 +100,7 @@ Manual installation (without the plugin):
    }
    ```
 
-Installation via plugin: this folder's `hooks/hooks.json` is Batuta's
+Installation via plugin: this folder's `hooks/hooks.json` is Craveira's
 plugin hooks manifest — installing the plugin **activates this gate
 automatically** (the `${CLAUDE_PLUGIN_ROOT}` path resolves to the
 installed plugin's folder). If you don't want the gate, use manual

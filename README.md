@@ -1,12 +1,17 @@
-# Batuta
+# Craveira
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**The baton belongs to the conductor.** *Batuta* is Portuguese for a
-conductor's baton — an AI-first development framework where you conduct,
-the agents play, and **process scales with risk, not with habit**.
+**Every change gets the care it deserves.** *Craveira* (kra-VAY-ra) is the
+Portuguese word for the gauge a craftsman uses to size each piece — an
+AI-first development framework for Claude Code where a team of agents builds
+your product and **the care each change gets is measured, not assumed**.
 
-> 🇵🇹 **Em português, brevemente:** a Batuta nasceu em português e foi
+Touch a stylesheet and no reviewer is summoned. Touch logins, payments or the
+database and review is mandatory, before and after, with tests. An 8-level
+table decides which is which.
+
+> 🇵🇹 **Em português, brevemente:** a Craveira nasceu em português e foi
 > traduzida para chegar mais longe. A história original vive no git; issues
 > e PRs em português continuam a ser bem-vindos.
 
@@ -40,7 +45,7 @@ The pieces, and the direction the improvement loop flows:
 
 ```mermaid
 flowchart LR
-    BA["Batuta (upstream)"] -->|"plugin or copy-paste"| project
+    BA["Craveira (upstream)"] -->|"plugin or copy-paste"| project
     subgraph project["Adopting project"]
         CM["CLAUDE.md — the index<br/>(project context lives here)"]
         AG[".claude/agents/<br/>6 generic roles"]
@@ -123,8 +128,8 @@ of each sub-part, not to the nominal tier of the whole feature.
 marketplace. In the project where you want the framework:
 
 ```
-/plugin marketplace add Ahlut/batuta
-/plugin install batuta@batuta
+/plugin marketplace add Ahlut/craveira
+/plugin install craveira@craveira
 ```
 
 This installs the **agents**, the **skills** and the **tier-gate PreToolUse
@@ -138,10 +143,10 @@ fill it in from `CLAUDE.template.md`, see the checklist below) and the git
 **By copy-paste — 3 scenarios, prompts ready to copy:**
 
 **A. Brand-new project, born from zero** — on GitHub, the **"Use this
-template"** button on this repo creates your project repo with Batuta
+template"** button on this repo creates your project repo with Craveira
 already inside. First instruction to Claude:
 
-> This repo was born from the Batuta template. Follow ADOPTION.md and the
+> This repo was born from the Craveira template. Follow ADOPTION.md and the
 > README checklist: fill in the CLAUDE.template.md placeholders (rename it
 > to CLAUDE.md), install the pre-push hook, and only ask me what you cannot
 > decide from the project files.
@@ -150,7 +155,7 @@ already inside. First instruction to Claude:
 created — the recommended path in most cases; the framework is process,
 not code):
 
-> Clone the Batuta repository into a temporary folder and adopt the
+> Clone the Craveira repository into a temporary folder and adopt the
 > framework in this project following ADOPTION.md: copy CLAUDE.template.md
 > to CLAUDE.md and fill the placeholders with this repo's real stack, copy
 > agents/ and skills/ into .claude/, and wire the pre-push hook to the
@@ -158,14 +163,14 @@ not code):
 
 **C. Existing project** — incremental adoption, nothing breaks:
 
-> Clone the Batuta repository into a temporary folder, read ADOPTION.md and
+> Clone the Craveira repository into a temporary folder, read ADOPTION.md and
 > map what this project already has. Adopt in phases: (1) the CLAUDE.md
 > with the tier table and the 9-step flow, adapted to the conventions that
 > already exist here; (2) the agents; (3) the pre-push hook. Skills and CI
 > wait until they hurt. Do not rewrite anything in the project — the
 > framework takes effect from the next commit, not retroactively.
 
-**Continuous improvement:** Batuta is the upstream. When a project learns a
+**Continuous improvement:** Craveira is the upstream. When a project learns a
 new rule, it flows up here; the others pull it in their next session.
 
 **Contributions are welcome** — issues and PRs, especially real

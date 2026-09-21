@@ -34,7 +34,7 @@
 //   when dating the commit). Fail-closed on the target case: marker
 //   missing, invalid, or older than the last commit.
 //
-// Installation: see hooks/README.md (in Batuta) / CLAUDE.md (hooks table).
+// Installation: see hooks/README.md (in Craveira) / CLAUDE.md (hooks table).
 // Exemptions: .md/.txt, docs/ and .claude/ — step 0 applies to code.
 // .json is NOT exempt on purpose: package.json is the DEPS tier, not
 // documentation.
