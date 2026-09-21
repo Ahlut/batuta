@@ -10,7 +10,7 @@
 // It never touches a hook it did not write. A different pre-push already in
 // place keeps running and ours is NOT installed — the message says so, and
 // how to merge. A backup on disk is not a control that runs, so "back up
-// and replace" is opt-in: CRAVEIRA_HOOKS=replace. An identical hook is left
+// and replace" is opt-in: BATUTA_HOOKS=replace. An identical hook is left
 // alone. The script exits 0 either way: a failing "prepare" would block
 // dependency installation, which is the wrong thing to punish.
 //
@@ -27,7 +27,7 @@ import { execSync } from "node:child_process";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
-const replace = process.env.CRAVEIRA_HOOKS === "replace";
+const replace = process.env.BATUTA_HOOKS === "replace";
 
 let hooksDir;
 try {
@@ -60,7 +60,7 @@ for (const hook of hooks) {
     if (!replace) {
       console.log(
         `install-hooks: a different ${hook} already exists at ${dest} — not touching it, so whatever it checks keeps running.\n` +
-          `  Merge the commands from ${relative(root, src)} into it by hand, or run CRAVEIRA_HOOKS=replace npm install ` +
+          `  Merge the commands from ${relative(root, src)} into it by hand, or run BATUTA_HOOKS=replace npm install ` +
           `to back it up (${hook}.bak-<timestamp>) and replace it.`
       );
       continue;

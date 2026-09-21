@@ -161,7 +161,7 @@ tries to follow it.
 Two layers, two decisions:
 
 - **Vulnerability audit in CI** (*old* dependencies with CVEs) — the
-  canonical shape is in §3; it is wired into the project's CI, Craveira ships
+  canonical shape is in §3; it is wired into the project's CI, Batuta ships
   no CI at all.
 - **Cooldown gate** (*too-new* dependencies, supply-chain defense) — see
   `hooks/README.md`, the decision is explained there. Summary: optional,

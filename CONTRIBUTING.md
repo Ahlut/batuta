@@ -1,6 +1,6 @@
-# Contributing to Craveira
+# Contributing to Batuta
 
-Thank you for considering a contribution. Craveira is a process framework,
+Thank you for considering a contribution. Batuta is a process framework,
 not a product — the value is in the rules and the "why" behind them, so
 the rigor of a contribution is measured more by its justification than by
 the size of its diff.

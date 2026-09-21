@@ -1,18 +1,18 @@
-# Craveira
+# Batuta
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![tests](https://github.com/Ahlut/craveira/actions/workflows/test.yml/badge.svg)](https://github.com/Ahlut/craveira/actions/workflows/test.yml)
+[![tests](https://github.com/Ahlut/batuta/actions/workflows/test.yml/badge.svg)](https://github.com/Ahlut/batuta/actions/workflows/test.yml)
 
-**Every change gets the care it deserves.** *Craveira* (kra-VAY-ra) is the
-Portuguese word for the gauge a craftsman uses to size each piece — an
-AI-first development framework for Claude Code where a team of agents builds
-your product and **the care each change gets is measured, not assumed**.
+**The baton belongs to the conductor.** *Batuta* is Portuguese for a
+conductor's baton — an AI-first development framework for Claude Code where
+one lead agent conducts a team of agents, and **the care each change gets is
+measured, not assumed**.
 
 Touch a stylesheet and no reviewer is summoned. Touch logins, payments or the
 database and review is mandatory, before and after, with tests. An 8-level
 table decides which is which.
 
-> 🇵🇹 **Em português, brevemente:** a Craveira nasceu em português e foi
+> 🇵🇹 **Em português, brevemente:** a Batuta nasceu em português e foi
 > traduzida para chegar mais longe. A história original vive no git; issues
 > e PRs em português continuam a ser bem-vindos.
 
@@ -46,7 +46,7 @@ The pieces, and the direction the improvement loop flows:
 
 ```mermaid
 flowchart LR
-    BA["Craveira (upstream)"] -->|"plugin or copy-paste"| project
+    BA["Batuta (upstream)"] -->|"plugin or copy-paste"| project
     subgraph project["Adopting project"]
         CM["CLAUDE.md — the index<br/>(project context lives here)"]
         AG[".claude/agents/<br/>6 generic roles"]
@@ -127,7 +127,7 @@ of each sub-part, not to the nominal tier of the whole feature.
 
 A fair objection: "with today's models you want one agent with skills, not
 six; it decides for itself what to run in the background and checks its own
-pipeline." Half of that is how Craveira already works. There is one lead
+pipeline." Half of that is how Batuta already works. There is one lead
 agent — the one you talk to. The six files in `agents/` are not six agents
 running; they are the role cards the lead agent hands out when the tier
 table says a change deserves a second pair of eyes, and it decides when to
@@ -135,7 +135,7 @@ do that. The verticals (frontend, backend) are context hygiene, not
 architecture — collapse them if your project doesn't need the split. Models
 are a cost default, swapped per task.
 
-The other half is where Craveira deliberately disagrees: the agent checking
+The other half is where Batuta deliberately disagrees: the agent checking
 its own pipeline. A review inside the same context shares the implementer's
 assumptions and its blind spots — that is not a review, it is a re-read. A
 *skill* loads instructions into the same context; a *subagent* gets a fresh
@@ -151,8 +151,8 @@ configuration detail. The rule stays.
 marketplace. In the project where you want the framework:
 
 ```
-/plugin marketplace add Ahlut/craveira
-/plugin install craveira@craveira
+/plugin marketplace add Ahlut/batuta
+/plugin install batuta@batuta
 ```
 
 This installs the **agents**, the **skills** and the **tier-gate PreToolUse
@@ -166,10 +166,10 @@ fill it in from `CLAUDE.template.md`, see the checklist below) and the git
 **By copy-paste — 3 scenarios, prompts ready to copy:**
 
 **A. Brand-new project, born from zero** — on GitHub, the **"Use this
-template"** button on this repo creates your project repo with Craveira
+template"** button on this repo creates your project repo with Batuta
 already inside. First instruction to Claude:
 
-> This repo was born from the Craveira template. Follow ADOPTION.md and the
+> This repo was born from the Batuta template. Follow ADOPTION.md and the
 > README checklist: fill in the CLAUDE.template.md placeholders (rename it
 > to CLAUDE.md), install the pre-push hook, and only ask me what you cannot
 > decide from the project files.
@@ -178,7 +178,7 @@ already inside. First instruction to Claude:
 created — the recommended path in most cases; the framework is process,
 not code):
 
-> Clone the Craveira repository into a temporary folder and adopt the
+> Clone the Batuta repository into a temporary folder and adopt the
 > framework in this project following ADOPTION.md: copy CLAUDE.template.md
 > to CLAUDE.md and fill the placeholders with this repo's real stack, copy
 > agents/ and skills/ into .claude/, and wire the pre-push hook to the
@@ -186,14 +186,14 @@ not code):
 
 **C. Existing project** — incremental adoption, nothing breaks:
 
-> Clone the Craveira repository into a temporary folder, read ADOPTION.md and
+> Clone the Batuta repository into a temporary folder, read ADOPTION.md and
 > map what this project already has. Adopt in phases: (1) the CLAUDE.md
 > with the tier table and the 9-step flow, adapted to the conventions that
 > already exist here; (2) the agents; (3) the pre-push hook. Skills and CI
 > wait until they hurt. Do not rewrite anything in the project — the
 > framework takes effect from the next commit, not retroactively.
 
-**Continuous improvement:** Craveira is the upstream. When a project learns a
+**Continuous improvement:** Batuta is the upstream. When a project learns a
 new rule, it flows up here; the others pull it in their next session.
 
 **Contributions are welcome** — issues and PRs, especially real
@@ -241,7 +241,7 @@ step, lives in `ADOPTION.md`.
    The installer puts the hook wherever git says hooks live (linked
    worktrees and `core.hooksPath` included) and does not touch a different
    `pre-push` that is already there — merge by hand, or
-   `CRAVEIRA_HOOKS=replace npm install` to back it up and replace it.
+   `BATUTA_HOOKS=replace npm install` to back it up and replace it.
    Details in `hooks/README.md`.
 
 5. **Decide where the single list of open items lives** (2 min) — keeping
@@ -281,7 +281,7 @@ process — there is no more setup.
   is tied to its own deploy provider and its own DB-as-a-service;
   ADOPTION.md says what an equivalent pipeline should cover, but writing
   the YAML belongs to the project. (The workflow in this repo tests
-  Craveira itself — the hooks and the agent files — not an adopting
+  Batuta itself — the hooks and the agent files — not an adopting
   project.)
 - **No proof that the review happened** — the tier gate checks that a tier
   was declared, not that the declared reviewers ran on the diff that got

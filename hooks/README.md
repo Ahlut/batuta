@@ -1,7 +1,7 @@
 # Hooks — installation
 
 > **Before installing any hook from this folder, read its content.**
-> Whoever clones a project that uses Craveira ends up with scripts running
+> Whoever clones a project that uses Batuta ends up with scripts running
 > automatically (on push, or on every assistant edit) without necessarily
 > having noticed. They are ~25-100 lines each — reading them costs a
 > minute, and it is the difference between adopting a gate and running
@@ -44,7 +44,7 @@ What the installer does, so nothing happens behind your back:
 - It never touches a hook it did not write. If a different `pre-push` is
   already there, it installs nothing, says so, and leaves the existing
   controls running — merge the two by hand, or run
-  `CRAVEIRA_HOOKS=replace npm install` to have the old one renamed to
+  `BATUTA_HOOKS=replace npm install` to have the old one renamed to
   `pre-push.bak-<timestamp>` and replaced. (The first version backed up
   and replaced by default; a backup on disk is not a control that runs.)
   An identical one is left alone.
@@ -117,7 +117,7 @@ Manual installation (without the plugin):
    }
    ```
 
-Installation via plugin: this folder's `hooks/hooks.json` is Craveira's
+Installation via plugin: this folder's `hooks/hooks.json` is Batuta's
 plugin hooks manifest — installing the plugin **activates this gate
 automatically** (the `${CLAUDE_PLUGIN_ROOT}` path resolves to the
 installed plugin's folder). If you don't want the gate, use manual
